@@ -2,4 +2,4 @@ export * from "./auth";
 export * from "./user";
 export * from "./comment";
 export * from "./post";
-export * from "./request";
+export * from "./friend-request";

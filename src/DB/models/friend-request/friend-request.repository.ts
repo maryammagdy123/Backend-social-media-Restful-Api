@@ -7,3 +7,4 @@ export class RequestRepository extends AbstractDBRepository<IRequest> {
     super(RequestModel);
   }
 }
+

@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { PostDocument } from "../../../common/types/post.types";
+import { CommentModel } from "../comment/comment.model";
 
 export const schema = new Schema<PostDocument>(
   {
@@ -32,4 +33,14 @@ export const schema = new Schema<PostDocument>(
   },
 );
 
+//TODO: DELETE POST AND ITS COMMENTS (REPLIE)
+// schema.pre("findOneAndDelete", async function () {
+//   const doc = await this.model.findOne(this.getFilter());
+
+
+
+//   // delete all comments + replies
+//   await CommentModel.deleteMany({ postId: doc._id });
+
+// });
 export const PostModel = model("Post", schema);

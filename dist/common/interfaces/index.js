@@ -20,3 +20,4 @@ __exportStar(require("./post.interface"), exports);
 __exportStar(require("./user-reaction.interface"), exports);
 __exportStar(require("./comment.interface"), exports);
 __exportStar(require("./friend-request.interface"), exports);
+__exportStar(require("./user-friends.interface"), exports);

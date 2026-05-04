@@ -18,4 +18,12 @@ router.post("/:receiverId", (0, middlewares_1.authenticateUser)("strict"), async
         data,
     });
 });
+router.post("/:id/accept", (0, middlewares_1.authenticateUser)("strict"), async (req, res, next) => {
+    await request_service_1.default.acceptRequest(req.user._id, new mongoose_1.Types.ObjectId(req.params.id));
+    (0, response_1.successResponse)({
+        res,
+        message: "Request accepted successfully!",
+        status: 200,
+    });
+});
 exports.default = router;

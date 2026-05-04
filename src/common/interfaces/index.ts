@@ -4,3 +4,4 @@ export * from "./post.interface";
 export * from "./user-reaction.interface";
 export * from "./comment.interface";
 export * from "./friend-request.interface";
+export * from "./user-friends.interface"

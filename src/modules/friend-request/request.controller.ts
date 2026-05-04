@@ -21,4 +21,20 @@ router.post(
     });
   },
 );
+router.post(
+  "/:id/accept",
+  authenticateUser("strict"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    await requestService.acceptRequest(
+      req.user._id,
+
+      new Types.ObjectId(req.params.id as string),
+    );
+    successResponse({
+      res,
+      message: "Request accepted successfully!",
+      status: 200,
+    });
+  },
+);
 export default router;

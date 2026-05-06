@@ -12,4 +12,8 @@ router.delete("/:id", (0, middlewares_1.authenticateUser)("strict"), async (req,
     await user_friends_service_1.default.unfriend(req.user._id, new mongoose_1.Types.ObjectId(req.params.id));
     return res.sendStatus(204);
 });
+router.post("/block/:id", (0, middlewares_1.authenticateUser)("strict"), async (req, res, next) => {
+    await user_friends_service_1.default.block(new mongoose_1.Types.ObjectId(req.params.id), req.user._id);
+    return res.sendStatus(204);
+});
 exports.default = router;

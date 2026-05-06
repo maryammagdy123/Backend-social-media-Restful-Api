@@ -16,4 +16,16 @@ router.delete(
     return res.sendStatus(204);
   },
 );
+//block endpoint
+router.post(
+  "/block/:id",
+  authenticateUser("strict"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    await userFriendsService.block(
+      new Types.ObjectId(req.params.id as string),
+      req.user._id,
+    );
+    return res.sendStatus(204);
+  },
+);
 export default router;

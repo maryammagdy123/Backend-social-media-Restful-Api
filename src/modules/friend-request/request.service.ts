@@ -58,6 +58,28 @@ class RequestService {
       friend: request.receiver,
     });
   };
+
+  public rejectOrCancelRequest = async (
+    userId: Types.ObjectId,
+    id: Types.ObjectId,
+  ) => {
+    const request = await this.requestRepository.findOne({
+      _id: id,
+    });
+    if (!request) throw new ConflictError("request not found");
+    //both sender and receiver can cancel or reject
+
+    const sender = request.sender.toString() === userId.toString();
+    const receiver = request.receiver.toString() === userId.toString();
+    if (!sender && !receiver) {
+      throw new UnauthorizedError(
+        "you are not allowed to cancel or reject this request",
+      );
+    }
+
+    await this.requestRepository.deleteOne({ _id: id });
+  };
+
 }
 export default new RequestService(
   new RequestRepository(),

@@ -47,5 +47,19 @@ class RequestService {
             friend: request.receiver,
         });
     };
+    rejectOrCancelRequest = async (userId, id) => {
+        const request = await this.requestRepository.findOne({
+            _id: id,
+        });
+        if (!request)
+            throw new exceptions_1.ConflictError("request not found");
+        const sender = request.sender.toString() === userId.toString();
+        const receiver = request.receiver.toString() === userId.toString();
+        if (!sender && !receiver) {
+            throw new exceptions_1.UnauthorizedError("you are not allowed to cancel or reject this request");
+        }
+        await this.requestRepository.deleteOne({ _id: id });
+    };
+    removeFriend = async () => { };
 }
 exports.default = new RequestService(new friend_request_1.RequestRepository(), new DB_1.UserFriendRepository());

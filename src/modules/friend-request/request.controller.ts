@@ -37,4 +37,20 @@ router.post(
     });
   },
 );
+router.delete(
+  "/:id/reject",
+  authenticateUser("strict"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    await requestService.rejectOrCancelRequest(
+      req.user._id,
+      new Types.ObjectId(req.params.id as string),
+    );
+    successResponse({
+      res,
+      message: "Request rejected successfully!",
+      status: 200,
+    });
+  },
+);
+
 export default router;

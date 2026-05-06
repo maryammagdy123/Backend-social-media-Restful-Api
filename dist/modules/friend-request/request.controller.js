@@ -26,4 +26,12 @@ router.post("/:id/accept", (0, middlewares_1.authenticateUser)("strict"), async 
         status: 200,
     });
 });
+router.post("/:id/reject", (0, middlewares_1.authenticateUser)("strict"), async (req, res, next) => {
+    await request_service_1.default.rejectOrCancelRequest(req.user._id, new mongoose_1.Types.ObjectId(req.params.id));
+    (0, response_1.successResponse)({
+        res,
+        message: "Request rejected successfully!",
+        status: 200,
+    });
+});
 exports.default = router;

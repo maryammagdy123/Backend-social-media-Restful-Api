@@ -7,6 +7,7 @@ import {
   createPostSchema,
   reactToPostSchema,
 } from "./validation/post.validation";
+import { Types } from "mongoose";
 
 const router = Router();
 router.use("/:postId/comment", commentRouter);
@@ -34,6 +35,18 @@ router.post(
     const userId = req.user._id;
 
     await postService.reactToPost(req.body, userId);
+    res.sendStatus(204);
+  },
+);
+router.patch(
+  "/:id/update-comment-privacy",
+  authenticateUser("strict"),
+  async (req: Request, res: Response, next: NextFunction) => {
+   await postService.updateCommentPrivacyOnPost(
+      new Types.ObjectId(req.params.id as string),
+      req.user._id,
+      req.body.commentPrivacy,
+    );
     res.sendStatus(204);
   },
 );

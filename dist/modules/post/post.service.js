@@ -45,6 +45,18 @@ class PostService {
         }
         return await this.userReactionRepo.findByIdAndDelete(existingReaction._id);
     };
+    updatePost = async (postId, updateData, userId) => { };
+    updateCommentPrivacyOnPost = async (id, userId, commentPrivacy) => {
+        const post = await this.postRepo.findById(id);
+        if (!post) {
+            throw new exceptions_1.NotFoundError("post not found");
+        }
+        if (post.userId.toString() !== userId.toString()) {
+            throw new exceptions_1.NotFoundError("you are not the owner of this post");
+        }
+        post.commentPrivacy = commentPrivacy;
+        return await post.save();
+    };
 }
 exports.PostService = PostService;
 exports.postService = new PostService(new post_1.PostRepository(), new user_reaction_repository_1.UserReactionRepository());

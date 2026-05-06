@@ -24,7 +24,7 @@ export const schema = new Schema<PostDocument>(
       type: Number,
       default: 0,
     },
-    commentDisabled:{
+    commentPrivacy:{
       type:String,
       enum:CommentPrivacy,
       default:CommentPrivacy.PUBLIC //by default commenting on post is allowed

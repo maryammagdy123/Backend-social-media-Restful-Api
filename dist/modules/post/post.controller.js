@@ -9,6 +9,7 @@ const post_service_1 = require("./post.service");
 const comment_controller_1 = __importDefault(require("../comment/comment.controller"));
 const response_1 = require("../../common/response");
 const post_validation_1 = require("./validation/post.validation");
+const mongoose_1 = require("mongoose");
 const router = (0, express_1.Router)();
 router.use("/:postId/comment", comment_controller_1.default);
 router.post("/", (0, middlewares_1.authenticateUser)("strict"), (0, middlewares_1.validation)(post_validation_1.createPostSchema.body), async (req, res, next) => {
@@ -24,6 +25,10 @@ router.post("/", (0, middlewares_1.authenticateUser)("strict"), (0, middlewares_
 router.post("/react-to-post", (0, middlewares_1.authenticateUser)("strict"), (0, middlewares_1.validation)(post_validation_1.reactToPostSchema.body), async (req, res, next) => {
     const userId = req.user._id;
     await post_service_1.postService.reactToPost(req.body, userId);
+    res.sendStatus(204);
+});
+router.patch("/:id/update-comment-privacy", (0, middlewares_1.authenticateUser)("strict"), async (req, res, next) => {
+    await post_service_1.postService.updateCommentPrivacyOnPost(new mongoose_1.Types.ObjectId(req.params.id), req.user._id, req.body.commentPrivacy);
     res.sendStatus(204);
 });
 exports.default = router;

@@ -3,7 +3,7 @@ import { CreatePostDTO, PostReactionDTO } from "./post.dto";
 import { PostRepository } from "../../DB/models/post";
 import { NotFoundError } from "../../common/exceptions";
 import { UserReactionRepository } from "../../DB/models/user-reaction/user-reaction.repository";
-import { ON_MODEL } from "../../common";
+import { CommentPrivacy, ON_MODEL } from "../../common";
 
 export class PostService {
   constructor(
@@ -67,7 +67,30 @@ export class PostService {
 
     return await this.userReactionRepo.findByIdAndDelete(existingReaction._id);
   };
-  
+  public updatePost = async (
+    postId: Types.ObjectId,
+    updateData: Partial<CreatePostDTO>,
+    userId: Types.ObjectId,
+  ) => {};
+
+  public updateCommentPrivacyOnPost = async (
+    id: Types.ObjectId,
+    userId: Types.ObjectId,
+    commentPrivacy: CommentPrivacy,
+  ) => {
+    //update comment privacy , set to (public ,disabled , friends only)
+    //check if post exists and belongs to the user
+    //check if the logged in user is the owner of the post
+    const post = await this.postRepo.findById(id);
+    if (!post) {
+      throw new NotFoundError("post not found");
+    }
+    if (post.userId.toString() !== userId.toString()) {
+      throw new NotFoundError("you are not the owner of this post");
+    }
+    post.commentPrivacy = commentPrivacy;
+    return await post.save(); 
+  };
 }
 export const postService = new PostService(
   new PostRepository(),

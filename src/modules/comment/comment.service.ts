@@ -10,15 +10,17 @@ import { AddCommentDTO, ReactToCommentDTO } from "./comment.dto";
 import {
   CommentRepository,
   PostRepository,
+  UserFriendRepository,
   UserReactionRepository,
 } from "../../DB";
-import { IPost, ON_MODEL } from "../../common";
+import { CommentPrivacy, IPost, ON_MODEL } from "../../common";
 
 class CommentService {
   constructor(
     private readonly postRepository: PostRepository,
     private readonly commentRepository: CommentRepository,
     private readonly userReactionRepository: UserReactionRepository,
+    private readonly friendRepository: UserFriendRepository,
   ) {}
 
   public addComment = async (
@@ -36,10 +38,23 @@ class CommentService {
     }
     // check if is allowed to comment on this post
     if (existingPost) {
-      if (existingPost.commentDisabled) {
+      if (existingPost.commentPrivacy === CommentPrivacy.DISABLED) {
         throw new BadRequestError(
           "The post creator turned of comments for this post",
         );
+      }
+      if (existingPost.commentPrivacy === CommentPrivacy.FRIENDS_ONLY) {
+        // TODO check if user is friend with post creator
+        const isFriend = await this.friendRepository.findOne({
+          $or: [
+            { user: userId, friend: existingPost.userId },
+            { user: existingPost.userId, friend: userId },
+          ],
+        });
+        if (!isFriend) {
+          console.log(isFriend);
+          throw new BadRequestError("Only friends can comment on this post");
+        }
       }
     }
     //if replying to a comment , check for a comment existence
@@ -138,8 +153,8 @@ class CommentService {
     return;
   };
 
-  public deleteComment = async (id:Types.ObjectId, userId: Types.ObjectId) => {
-    console.log({id,userId})
+  public deleteComment = async (id: Types.ObjectId, userId: Types.ObjectId) => {
+    console.log({ id, userId });
     const comment = await this.commentRepository.findOne(
       { _id: id },
       {},
@@ -165,4 +180,5 @@ export const commentService = new CommentService(
   new PostRepository(),
   new CommentRepository(),
   new UserReactionRepository(),
+  new UserFriendRepository(),
 );

@@ -8,10 +8,12 @@ class CommentService {
     postRepository;
     commentRepository;
     userReactionRepository;
-    constructor(postRepository, commentRepository, userReactionRepository) {
+    friendRepository;
+    constructor(postRepository, commentRepository, userReactionRepository, friendRepository) {
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.userReactionRepository = userReactionRepository;
+        this.friendRepository = friendRepository;
     }
     addComment = async (addCommentDTO, params, userId) => {
         const existingPost = await this.postRepository.findById(params.postId);
@@ -20,8 +22,20 @@ class CommentService {
             throw new exceptions_1.NotFoundError("This post is not available , post has been deleted");
         }
         if (existingPost) {
-            if (existingPost.commentDisabled) {
+            if (existingPost.commentPrivacy === common_1.CommentPrivacy.DISABLED) {
                 throw new exceptions_1.BadRequestError("The post creator turned of comments for this post");
+            }
+            if (existingPost.commentPrivacy === common_1.CommentPrivacy.FRIENDS_ONLY) {
+                const isFriend = await this.friendRepository.findOne({
+                    $or: [
+                        { user: userId, friend: existingPost.userId },
+                        { user: existingPost.userId, friend: userId },
+                    ],
+                });
+                if (!isFriend) {
+                    console.log(isFriend);
+                    throw new exceptions_1.BadRequestError("Only friends can comment on this post");
+                }
             }
         }
         let existingComment;
@@ -108,4 +122,4 @@ class CommentService {
         return await this.commentRepository.deleteOne({ _id: id });
     };
 }
-exports.commentService = new CommentService(new DB_1.PostRepository(), new DB_1.CommentRepository(), new DB_1.UserReactionRepository());
+exports.commentService = new CommentService(new DB_1.PostRepository(), new DB_1.CommentRepository(), new DB_1.UserReactionRepository(), new DB_1.UserFriendRepository());

@@ -23,7 +23,7 @@ exports.schema = new mongoose_1.Schema({
         type: Number,
         default: 0,
     },
-    commentDisabled: {
+    commentPrivacy: {
         type: String,
         enum: common_1.CommentPrivacy,
         default: common_1.CommentPrivacy.PUBLIC

@@ -7,5 +7,5 @@ export interface IPost {
   reactionsCount: number;
   commentsCount: number;
   sharesCount: number;
-  commentDisabled: boolean;
+  commentDisabled: string;
 }

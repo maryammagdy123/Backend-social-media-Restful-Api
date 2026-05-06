@@ -19,3 +19,4 @@ __exportStar(require("./email.enum"), exports);
 __exportStar(require("./otp.enums"), exports);
 __exportStar(require("./model.enum"), exports);
 __exportStar(require("./reaction.enum"), exports);
+__exportStar(require("./privacy.enums"), exports);

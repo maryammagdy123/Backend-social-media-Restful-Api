@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostModel = exports.schema = void 0;
 const mongoose_1 = require("mongoose");
+const common_1 = require("../../../common");
 exports.schema = new mongoose_1.Schema({
     userId: {
         type: mongoose_1.Schema.Types.ObjectId,
@@ -23,8 +24,9 @@ exports.schema = new mongoose_1.Schema({
         default: 0,
     },
     commentDisabled: {
-        type: Boolean,
-        default: false
+        type: String,
+        enum: common_1.CommentPrivacy,
+        default: common_1.CommentPrivacy.PUBLIC
     }
 }, {
     timestamps: true,

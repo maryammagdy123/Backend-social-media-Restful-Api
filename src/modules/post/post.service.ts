@@ -67,6 +67,7 @@ export class PostService {
 
     return await this.userReactionRepo.findByIdAndDelete(existingReaction._id);
   };
+  
 }
 export const postService = new PostService(
   new PostRepository(),

@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import { PostDocument } from "../../../common/types/post.types";
-import { CommentModel } from "../comment/comment.model";
+import { CommentPrivacy } from "../../../common";
+
 
 export const schema = new Schema<PostDocument>(
   {
@@ -24,8 +25,9 @@ export const schema = new Schema<PostDocument>(
       default: 0,
     },
     commentDisabled:{
-      type:Boolean,
-      default:false //by default commenting on post is allowed
+      type:String,
+      enum:CommentPrivacy,
+      default:CommentPrivacy.PUBLIC //by default commenting on post is allowed
     }
   },
   {

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { authenticateUser } from "../../middlewares";
-import requestService from "./request.service";
+import requestService from "./friend-request.service";
 import { Types } from "mongoose";
 import { successResponse } from "../../common/response";
 
@@ -49,6 +49,19 @@ router.delete(
       res,
       message: "Request rejected successfully!",
       status: 200,
+    });
+  },
+);
+router.get(
+  "/received",
+  authenticateUser("strict"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const data = await requestService.getReceivedRequests(req.user._id);
+    successResponse({
+      res,
+      message: "Received requests fetched successfully!",
+      status: 200,
+      data,
     });
   },
 );

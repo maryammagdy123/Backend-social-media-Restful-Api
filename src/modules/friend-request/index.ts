@@ -1,2 +1,2 @@
-export { default as requestRouter } from "./request.controller";
-export * from "./request.service";
+export { default as requestRouter } from "./friend-request.controller";
+export * from "./friend-request.service";

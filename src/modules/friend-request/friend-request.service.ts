@@ -36,6 +36,10 @@ class RequestService {
       );
     // else send a new request
     //send notification
+    if (receiverId.toString() == userId.toString()) {
+      throw new ConflictError("you cannot send a request to yourself");
+    }
+
     return this.requestRepository.create({
       sender: userId,
       receiver: receiverId,
@@ -80,6 +84,11 @@ class RequestService {
     await this.requestRepository.deleteOne({ _id: id });
   };
 
+  public getReceivedRequests = async (userId: Types.ObjectId) => {
+    return await this.requestRepository
+      .find({ receiver: userId })
+      .populate("sender", "name email");
+  };
 }
 export default new RequestService(
   new RequestRepository(),

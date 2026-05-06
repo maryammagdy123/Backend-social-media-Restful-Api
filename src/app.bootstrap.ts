@@ -3,7 +3,13 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import { authRouter, commentRouter, postRouter, requestRouter } from "./modules";
+import {
+  authRouter,
+  commentRouter,
+  friendRouter,
+  postRouter,
+  requestRouter,
+} from "./modules";
 import { globalErrorHandler } from "./middlewares";
 import { authenticateDB } from "./DB";
 import { redisService } from "./common/services";
@@ -22,7 +28,8 @@ const bootstrap = async () => {
   app.use("/auth", authRouter);
   app.use("/user", userRouter);
   app.use("/post", postRouter);
-  app.use("/request",requestRouter)
+  app.use("/request", requestRouter);
+  app.use("/friend", friendRouter);
   app.use("/comment", commentRouter);
   app.get("/*dummy", (req: Request, res: Response, next: NextFunction) => {
     res.status(404).json("Not Found");

@@ -13,10 +13,11 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./auth"), exports);
-__exportStar(require("./user"), exports);
-__exportStar(require("./comment"), exports);
-__exportStar(require("./post"), exports);
-__exportStar(require("./friend-request"), exports);
-__exportStar(require("./user-friends"), exports);
+exports.friendRouter = void 0;
+var user_friends_controller_1 = require("./user-friends.controller");
+Object.defineProperty(exports, "friendRouter", { enumerable: true, get: function () { return __importDefault(user_friends_controller_1).default; } });
+__exportStar(require("./user-friends.service"), exports);

@@ -35,4 +35,9 @@ router.post(
     return res.sendStatus(204);
   },
 );
+
+//todo get user friends list
+//todo get user blocked list
+//todo get user friend requests
+//todo get users profile(includes posts)
 export default router;

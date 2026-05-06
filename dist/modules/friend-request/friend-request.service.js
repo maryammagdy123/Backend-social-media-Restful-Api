@@ -27,6 +27,9 @@ class RequestService {
         });
         if (request)
             throw new exceptions_1.ConflictError("cannot send request, already there is a request !");
+        if (receiverId.toString() == userId.toString()) {
+            throw new exceptions_1.ConflictError("you cannot send a request to yourself");
+        }
         return this.requestRepository.create({
             sender: userId,
             receiver: receiverId,
@@ -59,6 +62,11 @@ class RequestService {
             throw new exceptions_1.UnauthorizedError("you are not allowed to cancel or reject this request");
         }
         await this.requestRepository.deleteOne({ _id: id });
+    };
+    getReceivedRequests = async (userId) => {
+        return await this.requestRepository
+            .find({ receiver: userId })
+            .populate("sender", "name email");
     };
 }
 exports.default = new RequestService(new friend_request_1.RequestRepository(), new DB_1.UserFriendRepository());

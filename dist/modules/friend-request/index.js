@@ -18,6 +18,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requestRouter = void 0;
-var request_controller_1 = require("./request.controller");
-Object.defineProperty(exports, "requestRouter", { enumerable: true, get: function () { return __importDefault(request_controller_1).default; } });
-__exportStar(require("./request.service"), exports);
+var friend_request_controller_1 = require("./friend-request.controller");
+Object.defineProperty(exports, "requestRouter", { enumerable: true, get: function () { return __importDefault(friend_request_controller_1).default; } });
+__exportStar(require("./friend-request.service"), exports);

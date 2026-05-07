@@ -6,8 +6,10 @@ const utils_1 = require("../utils");
 const redis_service_1 = require("./redis.service");
 class OTP {
     email;
-    constructor(email) {
+    emailProvider;
+    constructor(email, emailProvider) {
         this.email = email;
+        this.emailProvider = emailProvider;
     }
     generateOTP = async (keyPurpose) => {
         const otp = (0, utils_1.generateOTP)();
@@ -35,7 +37,7 @@ class OTP {
         const key = redis_service_1.redisService.otpKey(this.email, keyPurpose);
         await redis_service_1.redisService.ensureTTL(key, 180);
         const otp = await this.generateOTP(keyPurpose);
-        await (0, utils_1.sendOTPEmail)(this.email, otp, type);
+        await this.emailProvider.send(this.email, type, `Your OTP code is: ${otp}`);
     };
 }
 exports.OTP = OTP;

@@ -10,6 +10,7 @@ exports.loginSchema = {
     body: zod_1.default.strictObject({
         email: zod_1.default.string().email(),
         password: zod_1.default.string().min(8, { error: "invalid password!" }),
+        FCM: zod_1.default.string().optional(),
     }),
 };
 exports.signupSchema = {

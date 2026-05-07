@@ -6,10 +6,13 @@ const exceptions_1 = require("../../common/exceptions");
 const utils_1 = require("../../common/utils");
 const DB_1 = require("../../DB");
 const config_1 = require("../../config");
+const init_1 = require("../../common/providers/email/nodemailer/init");
 class AuthenticationService {
+    emailProvider;
     userRepo;
-    constructor() {
-        this.userRepo = new DB_1.UserRepository();
+    constructor(emailProvider, userRepo) {
+        this.emailProvider = emailProvider;
+        this.userRepo = userRepo;
     }
     signup = async (signupDTO) => {
         let { email, password, gender, username } = signupDTO;
@@ -29,9 +32,9 @@ class AuthenticationService {
             gender,
             username,
         }, 86400);
-        const otp = new common_1.OTP(email);
+        const otp = new common_1.OTP(email, this.emailProvider);
         const generatedOTP = await otp.generateOTP(common_1.OTP_KEY_PURPOSE.CONFIRM_EMAIL);
-        await (0, utils_1.sendOTPEmail)(otp.email, generatedOTP, common_1.EmailEnum.CONFIRM_EMAIL);
+        await this.emailProvider.send(otp.email, common_1.EmailEnum.CONFIRM_EMAIL, `Your OTP code is: ${generatedOTP}`);
         const data = {
             success: true,
             status: 201,
@@ -54,7 +57,7 @@ class AuthenticationService {
         if (user === null) {
             throw new exceptions_1.NotFoundError("No such account found please create account first!");
         }
-        const verified = await new common_1.OTP(email).verifyOTP(otp, common_1.OTP_KEY_PURPOSE.CONFIRM_EMAIL);
+        const verified = await new common_1.OTP(email, this.emailProvider).verifyOTP(otp, common_1.OTP_KEY_PURPOSE.CONFIRM_EMAIL);
         if (!verified) {
             throw new exceptions_1.BadRequestError("Cannot verify account");
         }
@@ -66,6 +69,7 @@ class AuthenticationService {
             message: "Account verified successfully",
             data: createdUser,
         };
+        await this.emailProvider.send(email, "Account Verified Successfully", `Welcome to our social media app, ${user.username}! We're excited to have you on board. Start connecting with friends and sharing your moments today!`);
         return data;
     };
     resendOtp = async (resendOtpDTO) => {
@@ -80,7 +84,7 @@ class AuthenticationService {
         if (userExistInDB && type === common_1.EmailEnum.CONFIRM_EMAIL) {
             throw new exceptions_1.BadRequestError("Cannot resend code!");
         }
-        await new common_1.OTP(email).resendOtp(common_1.OTP_KEY_PURPOSE.CONFIRM_EMAIL, type);
+        await new common_1.OTP(email, this.emailProvider).resendOtp(common_1.OTP_KEY_PURPOSE.CONFIRM_EMAIL, type);
     };
     login = async (loginDTO) => {
         const token = new common_1.TokenService();
@@ -162,4 +166,4 @@ class AuthenticationService {
         }
     };
 }
-exports.default = new AuthenticationService();
+exports.default = new AuthenticationService(init_1.nodemailerProvider, new DB_1.UserRepository());

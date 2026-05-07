@@ -13,7 +13,7 @@ import {
   ForbiddenError,
   NotFoundError,
 } from "../../common/exceptions";
-import { compare, hash, sendOTPEmail } from "../../common/utils";
+import { compare, hash,} from "../../common/utils";
 import { UserRepository } from "../../DB";
 import { ConfirmEmailDTO, LoginDTO, resendOtpDTO, SignupDTO } from "./auth.dto";
 import {
@@ -28,12 +28,14 @@ import {
 } from "../../config";
 import { Types } from "mongoose";
 
-class AuthenticationService {
-  private readonly userRepo: UserRepository;
+import { nodemailerProvider } from "../../common/providers/email/nodemailer/init";
+import { IEmailProvider } from "../../common/providers/email/email.interface";
 
-  constructor() {
-    this.userRepo = new UserRepository();
-  }
+class AuthenticationService {
+  constructor(
+    private readonly emailProvider: IEmailProvider,
+    private readonly userRepo: UserRepository,
+  ) {}
 
   public signup = async (signupDTO: SignupDTO): Promise<ISignup> => {
     let { email, password, gender, username } = signupDTO;
@@ -59,10 +61,14 @@ class AuthenticationService {
       86400,
     );
 
-    const otp = new OTP(email);
+    const otp = new OTP(email, this.emailProvider);
     const generatedOTP = await otp.generateOTP(OTP_KEY_PURPOSE.CONFIRM_EMAIL);
-    await sendOTPEmail(otp.email, generatedOTP, EmailEnum.CONFIRM_EMAIL);
-
+    // await sendOTPEmail(otp.email, generatedOTP, EmailEnum.CONFIRM_EMAIL);
+    await this.emailProvider.send(
+      otp.email,
+      EmailEnum.CONFIRM_EMAIL,
+      `Your OTP code is: ${generatedOTP}`,
+    );
     const data: ISignup = {
       success: true,
       status: 201,
@@ -93,7 +99,7 @@ class AuthenticationService {
     }
 
     //verify otp
-    const verified = await new OTP(email).verifyOTP(
+    const verified = await new OTP(email,this.emailProvider).verifyOTP(
       otp,
       OTP_KEY_PURPOSE.CONFIRM_EMAIL,
     );
@@ -111,7 +117,11 @@ class AuthenticationService {
       message: "Account verified successfully",
       data: createdUser,
     };
-
+await this.emailProvider.send(
+  email,
+  "Account Verified Successfully",
+  `Welcome to our social media app, ${user.username}! We're excited to have you on board. Start connecting with friends and sharing your moments today!`,
+);
     return data;
   };
 
@@ -127,7 +137,7 @@ class AuthenticationService {
     if (userExistInDB && type === EmailEnum.CONFIRM_EMAIL) {
       throw new BadRequestError("Cannot resend code!");
     }
-    await new OTP(email).resendOtp(OTP_KEY_PURPOSE.CONFIRM_EMAIL, type);
+    await new OTP(email, this.emailProvider).resendOtp(OTP_KEY_PURPOSE.CONFIRM_EMAIL, type);
   };
 
   public login = async (loginDTO: LoginDTO): Promise<ILoginResponse> => {
@@ -249,4 +259,7 @@ class AuthenticationService {
   };
 }
 
-export default new AuthenticationService();
+export default new AuthenticationService(
+  nodemailerProvider,
+  new UserRepository(),
+);

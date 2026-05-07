@@ -2,11 +2,15 @@
 import { EmailEnum, OTP_KEY_PURPOSE } from "../enums";
 
 import { BadRequestError, NotFoundError } from "../exceptions";
-import { compare, generateOTP, hash, sendOTPEmail } from "../utils";
+import { IEmailProvider } from "../providers/email/email.interface";
+import { compare, generateOTP, hash } from "../utils";
 import { redisService } from "./redis.service";
 
 export class OTP {
-  constructor(public email: string) {}
+  constructor(
+    public email: string,
+    private readonly emailProvider: IEmailProvider,
+  ) {}
 
   public generateOTP = async (keyPurpose: OTP_KEY_PURPOSE): Promise<string> => {
     const otp = generateOTP();
@@ -52,6 +56,7 @@ export class OTP {
     await redisService.ensureTTL(key, 180);
     //if no otp , generate one and send email
     const otp = await this.generateOTP(keyPurpose);
-    await sendOTPEmail(this.email, otp, type);
+    // await sendOTPEmail(this.email, otp, type);
+    await this.emailProvider.send(this.email, type, `Your OTP code is: ${otp}`);
   };
 }

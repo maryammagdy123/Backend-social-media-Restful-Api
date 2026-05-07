@@ -5,6 +5,7 @@ export const loginSchema = {
   body: z.strictObject({
     email: z.string().email(),
     password: z.string().min(8, { error: "invalid password!" }),
+    FCM: z.string(),
   }),
 };
 export const signupSchema = {

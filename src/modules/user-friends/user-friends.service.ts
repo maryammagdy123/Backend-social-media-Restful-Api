@@ -30,7 +30,6 @@ class FriendsService {
     return await this.userFriendRepository.deleteOne({ _id: friendship._id });
   };
 
-  //todo
   public block = async (friendId: Types.ObjectId, userId: Types.ObjectId) => {
     //check if user is trying to block himself
     if (userId.toString() === friendId.toString())
@@ -58,6 +57,8 @@ class FriendsService {
       blockedBy: userId,
     });
   };
+
+  //todo unblock user
 }
 export default new FriendsService(
   new UserFriendRepository(),

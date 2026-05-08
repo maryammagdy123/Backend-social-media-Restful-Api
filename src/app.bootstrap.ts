@@ -12,7 +12,7 @@ import {
 } from "./modules";
 import { globalErrorHandler } from "./middlewares";
 import { authenticateDB } from "./DB";
-
+import cors from "cors"
 import cookieParser from "cookie-parser";
 import { userRouter } from "./modules/user";
 import { redisService } from "./common/providers/cache/redis/init";
@@ -23,6 +23,11 @@ const bootstrap = async () => {
   await redisService.connect();
   app.use(express.json());
   app.use(cookieParser());
+  //cors
+  app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }));
   app.get("/", (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json("Hello, World!");
   });

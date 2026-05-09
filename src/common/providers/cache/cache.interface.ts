@@ -10,4 +10,7 @@ export interface ICacheProvider extends IAuthRedisProvider {
    * @param value =>> FCM-Token
    */
   addToSet(key: string, value: string): Promise<void>;
+  sMembers(key: string): Promise<string[]>;
+  sRem(key: string, member: string): Promise<number>;
+  sIsMember(key: string, member: string): Promise<number>;
 }

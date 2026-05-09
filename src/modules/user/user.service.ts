@@ -1,14 +1,22 @@
-import { TokenService } from "../../common";
+import { ProfilePrivacy, TokenService } from "../../common";
 import { redisService } from "../../common/providers/cache/redis/init";
-import { BadRequestError, NotFoundError } from "../../common/exceptions";
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError,
+} from "../../common/exceptions";
 import { REFRESH_TOKEN_SECRET_KEY } from "../../config";
 import { Types } from "mongoose";
-import { PostRepository, UserRepository } from "../../DB";
+import { PostRepository, UserFriendRepository, UserRepository } from "../../DB";
+import { BlockRepository } from "../../DB/models/block/block.repository";
+import { profile } from "node:console";
 export class UserService {
   constructor(
     private readonly tokenService: TokenService,
     private readonly userRepo: UserRepository,
     private readonly postRepo: PostRepository,
+    private readonly friendsRepo: UserFriendRepository,
+    private readonly blockRepo: BlockRepository,
   ) {}
 
   public sessionLogout = async (token: string) => {
@@ -53,20 +61,55 @@ export class UserService {
     );
     return true;
   };
+
   //this should return users data and published posts
-  public getUserProfile = async (userId: Types.ObjectId) => {
-    /**
-     * get all user data
-     * todo check if user profile is private or public
-     * if private check if the user is a friend of the profile owner or not
-     * if not a friend return only public data and posts
-     */
+  /**
+   * userId is the profile owner
+   *
+   */
+  public getUserProfile = async (
+    profileOwnerId: Types.ObjectId,
+    viewerId: Types.ObjectId | null,
+  ) => {
+    const user = await this.userRepo.findById(profileOwnerId);
 
-
-    const user = await this.userRepo.findById(userId,{username:1,profilePicture:1,});
     if (!user) throw new NotFoundError("User not found");
-    //get all user posts
-    const posts = await this.postRepo.find({ userId });
+    //check if the user is blocked by the profile owner or not
+    if (viewerId) {
+      const isBlocked = await this.blockRepo.findOne({
+        user: viewerId,
+        blockedBy: user._id,
+      });
+      if (isBlocked) {
+        throw new NotFoundError("User not found");
+      }
+    }
+
+    //in case the user's profile is protected only shown to friends
+    if (
+      user.profilePrivacy === ProfilePrivacy.PROTECTED &&
+      !(viewerId && viewerId.equals(profileOwnerId))
+    ) {
+      //check if the user is a friend of the profile owner or not
+      const isFriend = await this.friendsRepo.findOne({
+        $or: [
+          {
+            user: viewerId,
+            friend: profileOwnerId,
+          },
+          {
+            user: profileOwnerId,
+            friend: viewerId,
+          },
+        ],
+      });
+      if (!isFriend) {
+        throw new ForbiddenError(
+          "This profile is protected, only friends can view it",
+        );
+      }
+    }
+    const posts = await this.postRepo.find({ userId: profileOwnerId });
     return { user, posts };
   };
 }
@@ -74,4 +117,6 @@ export const userService = new UserService(
   new TokenService(),
   new UserRepository(),
   new PostRepository(),
+  new UserFriendRepository(),
+  new BlockRepository(),
 );

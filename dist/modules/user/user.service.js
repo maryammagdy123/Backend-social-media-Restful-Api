@@ -6,14 +6,19 @@ const init_1 = require("../../common/providers/cache/redis/init");
 const exceptions_1 = require("../../common/exceptions");
 const config_1 = require("../../config");
 const DB_1 = require("../../DB");
+const block_repository_1 = require("../../DB/models/block/block.repository");
 class UserService {
     tokenService;
     userRepo;
     postRepo;
-    constructor(tokenService, userRepo, postRepo) {
+    friendsRepo;
+    blockRepo;
+    constructor(tokenService, userRepo, postRepo, friendsRepo, blockRepo) {
         this.tokenService = tokenService;
         this.userRepo = userRepo;
         this.postRepo = postRepo;
+        this.friendsRepo = friendsRepo;
+        this.blockRepo = blockRepo;
     }
     sessionLogout = async (token) => {
         const decoded = this.tokenService.verifyToken(token, config_1.REFRESH_TOKEN_SECRET_KEY);
@@ -33,13 +38,40 @@ class UserService {
         await Promise.all(sessions.map((sessionId) => init_1.redisService.sRem(init_1.redisService.allSessionsSetKey(userId), sessionId)));
         return true;
     };
-    getUserProfile = async (userId) => {
-        const user = await this.userRepo.findById(userId, { username: 1, profilePicture: 1, });
+    getUserProfile = async (profileOwnerId, viewerId) => {
+        const user = await this.userRepo.findById(profileOwnerId);
         if (!user)
             throw new exceptions_1.NotFoundError("User not found");
-        const posts = await this.postRepo.find({ userId });
+        if (viewerId) {
+            const isBlocked = await this.blockRepo.findOne({
+                user: viewerId,
+                blockedBy: user._id,
+            });
+            if (isBlocked) {
+                throw new exceptions_1.NotFoundError("User not found");
+            }
+        }
+        if (user.profilePrivacy === common_1.ProfilePrivacy.PROTECTED &&
+            !(viewerId && viewerId.equals(profileOwnerId))) {
+            const isFriend = await this.friendsRepo.findOne({
+                $or: [
+                    {
+                        user: viewerId,
+                        friend: profileOwnerId,
+                    },
+                    {
+                        user: profileOwnerId,
+                        friend: viewerId,
+                    },
+                ],
+            });
+            if (!isFriend) {
+                throw new exceptions_1.ForbiddenError("This profile is protected, only friends can view it");
+            }
+        }
+        const posts = await this.postRepo.find({ userId: profileOwnerId });
         return { user, posts };
     };
 }
 exports.UserService = UserService;
-exports.userService = new UserService(new common_1.TokenService(), new DB_1.UserRepository(), new DB_1.PostRepository());
+exports.userService = new UserService(new common_1.TokenService(), new DB_1.UserRepository(), new DB_1.PostRepository(), new DB_1.UserFriendRepository(), new block_repository_1.BlockRepository());

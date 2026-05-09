@@ -17,10 +17,7 @@ export interface IAuthRedisProvider {
     refreshToken: string,
   ): Promise<void>;
 
-  sMembers(key: string): Promise<string[]>;
-
-  sRem(key: string, member: string): Promise<number>;
-  sIsMember(key: string, member: string): Promise<number>;
+  
   keys(userId: Types.ObjectId): Promise<string[]>;
   key(email: string): string;
 }

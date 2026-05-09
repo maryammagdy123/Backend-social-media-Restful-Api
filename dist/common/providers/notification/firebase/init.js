@@ -38,7 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.firebasePushNotificationProvider = void 0;
 const node_path_1 = __importDefault(require("node:path"));
-const firebase_service_1 = __importDefault(require("./firebase.service"));
 const fs = __importStar(require("node:fs"));
-const config = JSON.parse(fs.readFileSync(node_path_1.default.resolve(__dirname, "../../../config/social-media-app-be-firebase-adminsdk-fbsvc-429a98cb2b.json")));
+const firebase_service_1 = __importDefault(require("./firebase.service"));
+const config = JSON.parse(fs.readFileSync(node_path_1.default.resolve(__dirname, "../../../../config/social-media-app-be-firebase-adminsdk-fbsvc-429a98cb2b.json")));
 exports.firebasePushNotificationProvider = new firebase_service_1.default(config);

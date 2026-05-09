@@ -81,5 +81,9 @@ class RedisService {
     keys = async (userId) => {
         return await this.redisClient.keys(`refresh:${userId}:*`);
     };
+    async addToSet(key, value) {
+        await this.redisClient.sAdd(key, value);
+    }
+    ;
 }
 exports.RedisService = RedisService;

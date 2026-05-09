@@ -14,7 +14,13 @@ class FirebasePushNotificationProvider {
     async send(token, data) {
         this.client.messaging().send({
             token,
-            data
+            data,
+        });
+    }
+    async sendMultiple(tokens, data) {
+        this.client.messaging().sendEachForMulticast({
+            tokens,
+            data,
         });
     }
 }

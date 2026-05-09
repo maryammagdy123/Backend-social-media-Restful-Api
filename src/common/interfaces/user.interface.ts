@@ -1,4 +1,4 @@
-import { GenderEnum, ProviderEnum, RoleEnum } from "../enums";
+import { GenderEnum, ProfilePrivacy, ProviderEnum, RoleEnum } from "../enums";
 
 export interface IUser {
   username: string;
@@ -12,4 +12,5 @@ export interface IUser {
   role: RoleEnum;
   provider: ProviderEnum;
   isConfirmed: boolean;
+  profilePrivacy: ProfilePrivacy;
 }

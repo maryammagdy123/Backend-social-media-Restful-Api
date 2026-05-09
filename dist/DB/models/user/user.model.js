@@ -43,6 +43,11 @@ exports.schema = new mongoose_1.Schema({
         type: Boolean,
         default: true,
     },
+    profilePrivacy: {
+        type: Number,
+        enum: common_1.ProfilePrivacy,
+        default: common_1.ProfilePrivacy.public
+    }
 }, {
     timestamps: true,
 });

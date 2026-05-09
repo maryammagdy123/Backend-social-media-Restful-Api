@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import {
   GenderEnum,
+  ProfilePrivacy,
   ProviderEnum,
   RoleEnum,
   UserDocument,
@@ -48,6 +49,11 @@ export const schema = new Schema<UserDocument>(
       type: Boolean,
       default: true,
     },
+    profilePrivacy:{
+      type:Number,
+      enum:ProfilePrivacy,
+      default:ProfilePrivacy.public
+    }
   },
   {
     timestamps: true,

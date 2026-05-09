@@ -3,3 +3,7 @@ export enum CommentPrivacy {
   FRIENDS_ONLY = "friends_only",
   DISABLED = "disabled",
 }
+export enum ProfilePrivacy {
+  PUBLIC,
+  PROTECTED,
+}

@@ -32,7 +32,7 @@ router.post("/logout/all", (0, middlewares_1.authenticateUser)("strict"), async 
     return res.sendStatus(204);
 });
 router.get("/profile/:userId", (0, middlewares_1.authenticateUser)("optional"), async (req, res, next) => {
-    const { posts, user } = await user_service_1.userService.getUserProfile(new mongoose_1.Types.ObjectId(req.params.userId));
+    const { posts, user } = await user_service_1.userService.getUserProfile(new mongoose_1.Types.ObjectId(req.params.userId), req.user ? req.user._id : null);
     (0, response_1.successResponse)({
         res,
         message: "User profile retrieved successfully",

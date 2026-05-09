@@ -48,6 +48,7 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const { posts, user } = await userService.getUserProfile(
       new Types.ObjectId(req.params.userId as string),
+      req.user ? req.user._id : null
     );
 
     successResponse({

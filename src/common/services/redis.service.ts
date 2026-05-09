@@ -112,5 +112,9 @@ export class RedisService {
   public keys = async (userId: Types.ObjectId) => {
     return await this.redisClient.keys(`refresh:${userId}:*`);
   };
+
+  public addTosSet = async (key: string, value: string) => {
+    await this.redisClient.sAdd(key, value);
+  };
 }
 export const redisService = new RedisService();

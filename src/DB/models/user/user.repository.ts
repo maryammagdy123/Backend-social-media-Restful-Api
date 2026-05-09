@@ -7,5 +7,4 @@ export class UserRepository extends AbstractDBRepository<IUser> {
     super(UserModel);
   }
 }
-
-
+export default new UserRepository();

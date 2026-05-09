@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { CreatePostDTO, PostReactionDTO } from "./post.dto";
 import { PostRepository } from "../../DB/models/post";
-import { NotFoundError } from "../../common/exceptions";
+import { BadRequestError, NotFoundError } from "../../common/exceptions";
 import { UserReactionRepository } from "../../DB/models/user-reaction/user-reaction.repository";
 import { CommentPrivacy, ON_MODEL } from "../../common";
 import FirebasePushNotificationProvider from "../../common/providers/notification/firebase/firebase.service";
@@ -60,7 +60,7 @@ export class PostService {
       if (post.userId.toString() === userId.toString()) {
         return;
       }
-      
+
       // send notification to post owner
       //get all fcm tokens of the post owner and send notification to them
       const postOwnerFcmTokens = await this.cacheProvider.sMembers(
@@ -118,6 +118,13 @@ export class PostService {
     post.commentPrivacy = commentPrivacy;
     return await post.save();
   };
+
+  //get all logged user posts
+  // public getAllUserPosts = async (userId: Types.ObjectId) => {
+  //   const posts = await this.postRepo.find({ userId });
+  //   if (posts.length < 0) throw new BadRequestError("You have no posts");
+  //   return posts;
+  // };
 }
 export const postService = new PostService(
   new PostRepository(),

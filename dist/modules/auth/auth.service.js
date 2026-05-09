@@ -101,6 +101,9 @@ class AuthenticationService {
         if (!passwordCompared) {
             throw new exceptions_1.ForbiddenError("Email or password is incorrect ");
         }
+        if (loginDTO.FCM) {
+            await this.cacheProvider.addToSet(`${userExist._id}:FCM`, loginDTO.FCM);
+        }
         const accessToken = token.generateAccessToken({
             id: userExist._id,
             email: userExist.email,

@@ -5,10 +5,15 @@ const common_1 = require("../../common");
 const init_1 = require("../../common/providers/cache/redis/init");
 const exceptions_1 = require("../../common/exceptions");
 const config_1 = require("../../config");
+const DB_1 = require("../../DB");
 class UserService {
     tokenService;
-    constructor(tokenService) {
+    userRepo;
+    postRepo;
+    constructor(tokenService, userRepo, postRepo) {
         this.tokenService = tokenService;
+        this.userRepo = userRepo;
+        this.postRepo = postRepo;
     }
     sessionLogout = async (token) => {
         const decoded = this.tokenService.verifyToken(token, config_1.REFRESH_TOKEN_SECRET_KEY);
@@ -28,6 +33,13 @@ class UserService {
         await Promise.all(sessions.map((sessionId) => init_1.redisService.sRem(init_1.redisService.allSessionsSetKey(userId), sessionId)));
         return true;
     };
+    getUserProfile = async (userId) => {
+        const user = await this.userRepo.findById(userId, { username: 1, profilePicture: 1, });
+        if (!user)
+            throw new exceptions_1.NotFoundError("User not found");
+        const posts = await this.postRepo.find({ userId });
+        return { user, posts };
+    };
 }
 exports.UserService = UserService;
-exports.userService = new UserService(new common_1.TokenService());
+exports.userService = new UserService(new common_1.TokenService(), new DB_1.UserRepository(), new DB_1.PostRepository());

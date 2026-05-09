@@ -4,11 +4,17 @@ import { PostRepository } from "../../DB/models/post";
 import { NotFoundError } from "../../common/exceptions";
 import { UserReactionRepository } from "../../DB/models/user-reaction/user-reaction.repository";
 import { CommentPrivacy, ON_MODEL } from "../../common";
+import FirebasePushNotificationProvider from "../../common/providers/notification/firebase/firebase.service";
+import { firebasePushNotificationProvider } from "../../common/providers/notification/firebase/init";
+import { ICacheProvider } from "../../common/providers/cache/cache.interface";
+import { redisService } from "../../common/providers/cache/redis/init";
 
 export class PostService {
   constructor(
     private readonly postRepo: PostRepository,
     private readonly userReactionRepo: UserReactionRepository,
+    private readonly firebasePushNotificationService: FirebasePushNotificationProvider,
+    private readonly cacheProvider: ICacheProvider,
   ) {}
 
   public createPost = async (
@@ -36,19 +42,40 @@ export class PostService {
       refId: postReactionDTO.postId,
     });
 
-    //  add reaction
+    //  add new reaction
     if (!existingReaction) {
       await this.postRepo.updateOne(
         { _id: postReactionDTO.postId },
         { $inc: { reactionsCount: 1 } },
       );
 
-      return await this.userReactionRepo.create({
+      await this.userReactionRepo.create({
         onModel: ON_MODEL.Post,
         type: postReactionDTO.type,
         refId: post._id,
         userId,
       });
+
+      // if the user is the owner of the post do not send notification
+      if (post.userId.toString() === userId.toString()) {
+        return;
+      }
+      
+      // send notification to post owner
+      //get all fcm tokens of the post owner and send notification to them
+      const postOwnerFcmTokens = await this.cacheProvider.sMembers(
+        `${post.userId}:FCM`,
+      );
+      if (postOwnerFcmTokens.length > 0) {
+        await this.firebasePushNotificationService.sendMultiple(
+          postOwnerFcmTokens,
+          {
+            title: "New Reaction",
+            body: `You have a new reaction on your post ${post._id} from user ${userId} who reacted with ${postReactionDTO.type}`,
+          },
+        );
+      }
+      return;
     }
 
     //  change reaction type
@@ -89,10 +116,12 @@ export class PostService {
       throw new NotFoundError("you are not the owner of this post");
     }
     post.commentPrivacy = commentPrivacy;
-    return await post.save(); 
+    return await post.save();
   };
 }
 export const postService = new PostService(
   new PostRepository(),
   new UserReactionRepository(),
+  firebasePushNotificationProvider,
+  redisService,
 );

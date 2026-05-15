@@ -9,7 +9,7 @@ import { REFRESH_TOKEN_SECRET_KEY } from "../../config";
 import { Types } from "mongoose";
 import { PostRepository, UserFriendRepository, UserRepository } from "../../DB";
 import { BlockRepository } from "../../DB/models/block/block.repository";
-import { profile } from "node:console";
+
 export class UserService {
   constructor(
     private readonly tokenService: TokenService,

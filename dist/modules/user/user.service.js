@@ -72,6 +72,17 @@ class UserService {
         const posts = await this.postRepo.find({ userId: profileOwnerId });
         return { user, posts };
     };
+    myProfile = async (me) => {
+        const user = await this.userRepo.findById(me);
+        const posts = await this.postRepo.find({ userId: me });
+        const friends = await this.friendsRepo.find({ user: me }).populate("friends");
+        const data = {
+            userProfile: user,
+            posts,
+            friends: friends.map((f) => f.friend),
+        };
+        return data;
+    };
 }
 exports.UserService = UserService;
 exports.userService = new UserService(new common_1.TokenService(), new DB_1.UserRepository(), new DB_1.PostRepository(), new DB_1.UserFriendRepository(), new block_repository_1.BlockRepository());

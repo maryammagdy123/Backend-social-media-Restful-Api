@@ -13,14 +13,6 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postRouter = void 0;
-var post_controller_1 = require("./post.controller");
-Object.defineProperty(exports, "postRouter", { enumerable: true, get: function () { return __importDefault(post_controller_1).default; } });
-__exportStar(require("./post.service"), exports);
-__exportStar(require("./validation/post.validation"), exports);
-__exportStar(require("./post.dto"), exports);
-__exportStar(require("./graphql"), exports);
+__exportStar(require("./post.types.gql"), exports);
+__exportStar(require("./post.enums.gql.types"), exports);

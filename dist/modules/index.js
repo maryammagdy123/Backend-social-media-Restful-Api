@@ -20,3 +20,4 @@ __exportStar(require("./comment"), exports);
 __exportStar(require("./post"), exports);
 __exportStar(require("./friend-request"), exports);
 __exportStar(require("./user-friends"), exports);
+__exportStar(require("./graphql"), exports);

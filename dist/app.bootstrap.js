@@ -11,6 +11,7 @@ const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const user_1 = require("./modules/user");
 const init_1 = require("./common/providers/cache/redis/init");
+const express_2 = require("graphql-http/lib/use/express");
 const bootstrap = async () => {
     console.log("Bootstrapping the application...");
     const app = (0, express_1.default)();
@@ -22,6 +23,7 @@ const bootstrap = async () => {
         origin: "http://localhost:5173",
         credentials: true,
     }));
+    app.all("/graphql", (0, express_2.createHandler)({ schema: modules_1.schema }));
     app.get("/", (req, res, next) => {
         res.status(200).json("Hello, World!");
     });

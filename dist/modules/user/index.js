@@ -21,3 +21,5 @@ exports.userRouter = void 0;
 var user_controller_1 = require("./user.controller");
 Object.defineProperty(exports, "userRouter", { enumerable: true, get: function () { return __importDefault(user_controller_1).default; } });
 __exportStar(require("./user.service"), exports);
+__exportStar(require("./graphql"), exports);
+__exportStar(require("./user.entities"), exports);

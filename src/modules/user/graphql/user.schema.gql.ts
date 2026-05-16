@@ -1,12 +1,12 @@
-import { GraphQLString } from "graphql";
 import { userResolver, UserResolver } from "./user.resolver.gql";
+import { ProfileResponseType } from "./user.types.gql";
 class UserGQLSchema {
   constructor(private readonly userResolver: UserResolver) {}
 
   registerQuery() {
     return {
       getMyProfile: {
-        type: GraphQLString,
+        type: ProfileResponseType,
         description:
           "This query returns the profile of the currently authenticated user, including their basic information, posts, and friends. It requires authentication and will return an error if the user is not logged in.",
         resolve: this.userResolver.getMyProfile,

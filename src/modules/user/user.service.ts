@@ -1,4 +1,4 @@
-import { ProfilePrivacy, TokenService } from "../../common";
+import { IUser, ProfilePrivacy, TokenService } from "../../common";
 import { redisService } from "../../common/providers/cache/redis/init";
 import {
   BadRequestError,
@@ -117,12 +117,12 @@ export class UserService {
   public myProfile = async (me: Types.ObjectId): Promise<IProfileResponse> => {
     const user = await this.userRepo.findById(me);
     const posts = await this.postRepo.find({ userId: me });
-    const friends = await this.friendsRepo.find({ user: me }).populate("friends");
+    const friends = await this.friendsRepo.find({ user: me }).populate("friend");
 
-     const data:IProfileResponse = {
+    const data: IProfileResponse = {
       userProfile: user!,
       posts,
-      friends: friends.map((f) => f.friend as any),
+      friends: friends.map((f) => f.friend as unknown as IUser),
     };
     return data;
   };

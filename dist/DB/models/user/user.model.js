@@ -46,7 +46,7 @@ exports.schema = new mongoose_1.Schema({
     profilePrivacy: {
         type: Number,
         enum: common_1.ProfilePrivacy,
-        default: common_1.ProfilePrivacy.public
+        default: common_1.ProfilePrivacy.PUBLIC
     }
 }, {
     timestamps: true,

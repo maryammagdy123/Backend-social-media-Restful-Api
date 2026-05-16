@@ -16,3 +16,4 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./post.types.gql"), exports);
 __exportStar(require("./post.enums.gql.types"), exports);
+__exportStar(require("./post.schema.gql"), exports);

@@ -23,7 +23,7 @@ const bootstrap = async () => {
         origin: "http://localhost:5173",
         credentials: true,
     }));
-    app.all("/graphql", (0, express_2.createHandler)({ schema: modules_1.schema }));
+    app.all("/graphql", (0, express_2.createHandler)({ schema: modules_1.schema, context: (req) => ({ req }) }));
     app.get("/", (req, res, next) => {
         res.status(200).json("Hello, World!");
     });

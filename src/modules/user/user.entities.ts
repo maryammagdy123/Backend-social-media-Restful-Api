@@ -1,4 +1,4 @@
-import { IPost, IUser } from "../../common";
+import { IPost, IUser, IUserFriends } from "../../common";
 
 export interface IProfileResponse {
   userProfile: IUser;

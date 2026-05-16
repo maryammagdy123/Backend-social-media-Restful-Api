@@ -52,7 +52,7 @@ export const schema = new Schema<UserDocument>(
     profilePrivacy:{
       type:Number,
       enum:ProfilePrivacy,
-      default:ProfilePrivacy.public
+      default:ProfilePrivacy.PUBLIC
     }
   },
   {

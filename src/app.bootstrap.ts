@@ -38,7 +38,7 @@ const bootstrap = async () => {
 
 
 
-  app.all("/graphql", createHandler({ schema:schema }));
+  app.all("/graphql", createHandler({ schema:schema ,context:(req)=>({req})}));
   app.get("/", (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json("Hello, World!");
   });

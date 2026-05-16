@@ -75,7 +75,7 @@ class UserService {
     myProfile = async (me) => {
         const user = await this.userRepo.findById(me);
         const posts = await this.postRepo.find({ userId: me });
-        const friends = await this.friendsRepo.find({ user: me }).populate("friends");
+        const friends = await this.friendsRepo.find({ user: me }).populate("friend");
         const data = {
             userProfile: user,
             posts,

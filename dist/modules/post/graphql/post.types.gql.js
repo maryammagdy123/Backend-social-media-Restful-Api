@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostTypeGQL = void 0;
+exports.PostListResponseGQLType = exports.PostTypeGQL = void 0;
 const graphql_1 = require("graphql");
 const post_enums_gql_types_1 = require("./post.enums.gql.types");
 exports.PostTypeGQL = new graphql_1.GraphQLObjectType({
@@ -31,4 +31,10 @@ exports.PostTypeGQL = new graphql_1.GraphQLObjectType({
             type: graphql_1.GraphQLString,
         },
     },
+});
+exports.PostListResponseGQLType = new graphql_1.GraphQLObjectType({
+    name: "PostListResponse",
+    fields: {
+        message: { type: new graphql_1.GraphQLNonNull(graphql_1.GraphQLString) },
+    }
 });

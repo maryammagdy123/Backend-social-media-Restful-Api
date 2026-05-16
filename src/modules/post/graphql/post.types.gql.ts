@@ -4,6 +4,7 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLID,
+  GraphQLNonNull,
 } from "graphql";
 import { CommentPrivacyGQLEnumType } from "./post.enums.gql.types";
 
@@ -44,3 +45,12 @@ export const PostTypeGQL = new GraphQLObjectType({
     },
   },
 });
+
+
+export const PostListResponseGQLType =new GraphQLObjectType({
+  name:"PostListResponse",
+  fields:{
+    message:{type:new GraphQLNonNull(GraphQLString)},
+    
+  }
+})

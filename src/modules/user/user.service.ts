@@ -115,16 +115,16 @@ export class UserService {
   };
 
   public myProfile = async (me: Types.ObjectId): Promise<IProfileResponse> => {
-    const user = await this.userRepo.findById(me);
-    const posts = await this.postRepo.find({ userId: me });
-    const friends = await this.friendsRepo.find({ user: me }).populate("friend");
-
-    const data: IProfileResponse = {
+    const [user, posts, friends] = await Promise.all([
+      this.userRepo.findById(me),
+      this.postRepo.find({ userId: me }),
+      this.friendsRepo.find({ user: me }).populate<{ friend: IUser }>("friend"),
+    ]);
+    return {
       userProfile: user!,
       posts,
-      friends: friends.map((f) => f.friend as unknown as IUser),
+      friends: friends.map((f) => f.friend),
     };
-    return data;
   };
 }
 export const userService = new UserService(

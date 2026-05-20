@@ -1,4 +1,4 @@
-import { userResolver, UserResolver } from "./user.resolver.gql";
+import { userResolver, UserResolver } from "./user.resolver";
 import { ProfileResponseType } from "./user.types.gql";
 class UserGQLSchema {
   constructor(private readonly userResolver: UserResolver) {}

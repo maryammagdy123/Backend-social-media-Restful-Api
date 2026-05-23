@@ -1,4 +1,9 @@
-import { IUser, ProfilePrivacy, TokenService, UserDocument } from "../../common";
+import {
+  IUser,
+  ProfilePrivacy,
+  TokenService,
+  UserDocument,
+} from "../../common";
 import { redisService } from "../../common/providers/cache/redis/init";
 import {
   BadRequestError,
@@ -7,9 +12,16 @@ import {
 } from "../../common/exceptions";
 import { REFRESH_TOKEN_SECRET_KEY } from "../../config";
 import { Types } from "mongoose";
-import { PostRepository, UserFriendRepository, UserRepository } from "../../DB";
+import {
+  CommentRepository,
+  PostRepository,
+  UserFriendRepository,
+  UserReactionRepository,
+  UserRepository,
+} from "../../DB";
 import { BlockRepository } from "../../DB/models/block/block.repository";
 import { IProfileResponse } from "./user.entities";
+import { RequestRepository } from "../../DB/models/friend-request";
 
 export class UserService {
   constructor(
@@ -18,6 +30,9 @@ export class UserService {
     private readonly postRepo: PostRepository,
     private readonly friendsRepo: UserFriendRepository,
     private readonly blockRepo: BlockRepository,
+    private readonly reactionRepo: UserReactionRepository,
+    private readonly requestRepo: RequestRepository,
+    private readonly commentRepo: CommentRepository,
   ) {}
 
   public sessionLogout = async (token: string) => {
@@ -114,34 +129,34 @@ export class UserService {
     return { user, posts };
   };
 
-
-
   public myProfile = async (me: Types.ObjectId): Promise<IProfileResponse> => {
-    const [user, posts, friends] = await Promise.all([
-      this.userRepo.findById(me),
-      this.postRepo.find({ userId: me }),
-       this.friendsRepo
-      .find({
-        $or: [
-          { user: me },
-          { friend: me },
-        ],
-      })
-      .populate<{ user:UserDocument; friend: IUser }>([
-        "user",
-        "friend",
-      ]),
-    ]);
+    const [user, posts, friends, likes, requests, comments] = await Promise.all(
+      [
+        this.userRepo.findById(me),
+        this.postRepo.find({ userId: me }),
+        this.friendsRepo
+          .find({
+            $or: [{ user: me }, { friend: me }],
+          })
+          .populate<{ user: UserDocument; friend: IUser }>(["user", "friend"]),
+        this.reactionRepo.find({ userId: me }),
+        this.requestRepo.find({ receiver: me }),
+        this.commentRepo.find({ userId: me }),
+      ],
+    );
     return {
       userProfile: user!,
       posts,
-
-    friends: friends.map((f) => {
-      return f.user._id.toString() === me.toString()
-        ? f.friend
-        : f.user;
-    }),
-
+      friends: friends.map((f) => {
+        return f.user._id.toString() === me.toString() ? f.friend : f.user;
+      }),
+      statistics: {
+        friendsCount: friends.length,
+        postsCount: posts.length,
+        likesCount: likes.length,
+        friendsRequestsCount: requests.length,
+        commentsCount: comments.length,
+      },
     };
   };
 }
@@ -151,4 +166,7 @@ export const userService = new UserService(
   new PostRepository(),
   new UserFriendRepository(),
   new BlockRepository(),
+  new UserReactionRepository(),
+  new RequestRepository(),
+  new CommentRepository(),
 );

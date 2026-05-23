@@ -7,6 +7,7 @@ import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLNonNull,
+  GraphQLInt,
 } from "graphql";
 import { PostTypeGQL } from "../../post";
 import {
@@ -77,7 +78,19 @@ export const UserTypeGQL = new GraphQLObjectType({
     },
   },
 });
-
+export const UserProfileStatisticsTypeGQL = new GraphQLObjectType({
+  name: "ProfileStatisticsType",
+  fields: {
+    commentsCount: {
+      type: GraphQLInt,
+    },
+    postsCount: { type: GraphQLInt },
+    friendsRequestsCount: { type: GraphQLInt },
+    friendsCount: { type: GraphQLInt },
+    likesCount: { type: GraphQLInt },
+  
+  },
+});
 export const ProfileResponseType = new GraphQLNonNull(
   new GraphQLObjectType({
     name: "ProfileResponse",
@@ -96,6 +109,10 @@ export const ProfileResponseType = new GraphQLNonNull(
 
       friends: {
         type: new GraphQLList(UserTypeGQL),
+      },
+
+      statistics: {
+        type: UserProfileStatisticsTypeGQL,
       },
     },
   }),

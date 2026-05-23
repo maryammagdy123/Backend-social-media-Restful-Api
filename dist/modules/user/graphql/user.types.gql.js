@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProfileResponseType = exports.UserTypeGQL = void 0;
+exports.ProfileResponseType = exports.UserProfileStatisticsTypeGQL = exports.UserTypeGQL = void 0;
 const graphql_1 = require("graphql");
 const post_1 = require("../../post");
 const user_enums_gql_types_1 = require("./user.enums.gql.types");
@@ -51,6 +51,18 @@ exports.UserTypeGQL = new graphql_1.GraphQLObjectType({
         },
     },
 });
+exports.UserProfileStatisticsTypeGQL = new graphql_1.GraphQLObjectType({
+    name: "ProfileStatisticsType",
+    fields: {
+        commentsCount: {
+            type: graphql_1.GraphQLInt,
+        },
+        postsCount: { type: graphql_1.GraphQLInt },
+        friendsRequestsCount: { type: graphql_1.GraphQLInt },
+        friendsCount: { type: graphql_1.GraphQLInt },
+        likesCount: { type: graphql_1.GraphQLInt },
+    },
+});
 exports.ProfileResponseType = new graphql_1.GraphQLNonNull(new graphql_1.GraphQLObjectType({
     name: "ProfileResponse",
     fields: {
@@ -65,6 +77,9 @@ exports.ProfileResponseType = new graphql_1.GraphQLNonNull(new graphql_1.GraphQL
         },
         friends: {
             type: new graphql_1.GraphQLList(exports.UserTypeGQL),
+        },
+        statistics: {
+            type: exports.UserProfileStatisticsTypeGQL,
         },
     },
 }));

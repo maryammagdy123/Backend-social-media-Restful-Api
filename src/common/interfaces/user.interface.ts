@@ -14,3 +14,11 @@ export interface IUser {
   isConfirmed: boolean;
   profilePrivacy: ProfilePrivacy;
 }
+
+export interface IProfileStatistics {
+  postsCount: number;
+  friendsRequestsCount: number;
+  friendsCount: number;
+  likesCount: number;
+  commentsCount:number
+}

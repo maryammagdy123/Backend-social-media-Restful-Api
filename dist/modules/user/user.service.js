@@ -7,18 +7,25 @@ const exceptions_1 = require("../../common/exceptions");
 const config_1 = require("../../config");
 const DB_1 = require("../../DB");
 const block_repository_1 = require("../../DB/models/block/block.repository");
+const friend_request_1 = require("../../DB/models/friend-request");
 class UserService {
     tokenService;
     userRepo;
     postRepo;
     friendsRepo;
     blockRepo;
-    constructor(tokenService, userRepo, postRepo, friendsRepo, blockRepo) {
+    reactionRepo;
+    requestRepo;
+    commentRepo;
+    constructor(tokenService, userRepo, postRepo, friendsRepo, blockRepo, reactionRepo, requestRepo, commentRepo) {
         this.tokenService = tokenService;
         this.userRepo = userRepo;
         this.postRepo = postRepo;
         this.friendsRepo = friendsRepo;
         this.blockRepo = blockRepo;
+        this.reactionRepo = reactionRepo;
+        this.requestRepo = requestRepo;
+        this.commentRepo = commentRepo;
     }
     sessionLogout = async (token) => {
         const decoded = this.tokenService.verifyToken(token, config_1.REFRESH_TOKEN_SECRET_KEY);
@@ -73,31 +80,33 @@ class UserService {
         return { user, posts };
     };
     myProfile = async (me) => {
-        const [user, posts, friends] = await Promise.all([
+        const [user, posts, friends, likes, requests, comments] = await Promise.all([
             this.userRepo.findById(me),
             this.postRepo.find({ userId: me }),
             this.friendsRepo
                 .find({
-                $or: [
-                    { user: me },
-                    { friend: me },
-                ],
+                $or: [{ user: me }, { friend: me }],
             })
-                .populate([
-                "user",
-                "friend",
-            ]),
+                .populate(["user", "friend"]),
+            this.reactionRepo.find({ userId: me }),
+            this.requestRepo.find({ receiver: me }),
+            this.commentRepo.find({ userId: me }),
         ]);
         return {
             userProfile: user,
             posts,
             friends: friends.map((f) => {
-                return f.user._id.toString() === me.toString()
-                    ? f.friend
-                    : f.user;
+                return f.user._id.toString() === me.toString() ? f.friend : f.user;
             }),
+            statistics: {
+                friendsCount: friends.length,
+                postsCount: posts.length,
+                likesCount: likes.length,
+                friendsRequestsCount: requests.length,
+                commentsCount: comments.length,
+            },
         };
     };
 }
 exports.UserService = UserService;
-exports.userService = new UserService(new common_1.TokenService(), new DB_1.UserRepository(), new DB_1.PostRepository(), new DB_1.UserFriendRepository(), new block_repository_1.BlockRepository());
+exports.userService = new UserService(new common_1.TokenService(), new DB_1.UserRepository(), new DB_1.PostRepository(), new DB_1.UserFriendRepository(), new block_repository_1.BlockRepository(), new DB_1.UserReactionRepository(), new friend_request_1.RequestRepository(), new DB_1.CommentRepository());

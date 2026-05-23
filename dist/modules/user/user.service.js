@@ -88,9 +88,9 @@ class UserService {
                 $or: [{ user: me }, { friend: me }],
             })
                 .populate(["user", "friend"]),
-            this.reactionRepo.find({ userId: me }),
-            this.requestRepo.find({ receiver: me }),
-            this.commentRepo.find({ userId: me }),
+            this.reactionRepo.find({ userId: me }).countDocuments(),
+            this.requestRepo.find({ receiver: me }).countDocuments(),
+            this.commentRepo.find({ userId: me }).countDocuments(),
         ]);
         return {
             userProfile: user,
@@ -101,9 +101,9 @@ class UserService {
             statistics: {
                 friendsCount: friends.length,
                 postsCount: posts.length,
-                likesCount: likes.length,
-                friendsRequestsCount: requests.length,
-                commentsCount: comments.length,
+                likesCount: likes,
+                friendsRequestsCount: requests,
+                commentsCount: comments,
             },
         };
     };

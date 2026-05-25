@@ -46,7 +46,12 @@ class UserService {
         return true;
     };
     getUserProfile = async (profileOwnerId, viewerId, paginateDTO) => {
-        const user = await this.userRepo.findById(profileOwnerId);
+        const user = await this.userRepo.findById(profileOwnerId, {
+            username: 1,
+            profilePicture: 1,
+            bio: 1,
+            coverPhotos: 1,
+        });
         if (!user)
             throw new exceptions_1.NotFoundError("User not found");
         if (viewerId) {

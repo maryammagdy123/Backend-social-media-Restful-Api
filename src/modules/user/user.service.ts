@@ -89,7 +89,12 @@ export class UserService {
     viewerId: Types.ObjectId | null,
     paginateDTO: PaginateDTO,
   ) => {
-    const user = await this.userRepo.findById(profileOwnerId);
+    const user = await this.userRepo.findById(profileOwnerId, {
+      username: 1,
+      profilePicture: 1,
+      bio: 1,
+      coverPhotos: 1,
+    });
 
     if (!user) throw new NotFoundError("User not found");
     //check if the user is blocked by the profile owner or not

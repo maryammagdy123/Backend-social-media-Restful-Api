@@ -128,7 +128,7 @@ export class UserService {
       }
     }
 
-    const { page = 1, limit = 10 } = paginateDTO || {};
+    const { page = 1, limit = 10, search = "" } = paginateDTO || {};
     let skip = (page - 1) * limit;
     const posts = await this.postRepo
       .find({ userId: profileOwnerId })

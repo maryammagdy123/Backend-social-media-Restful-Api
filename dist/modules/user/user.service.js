@@ -76,7 +76,7 @@ class UserService {
                 throw new exceptions_1.ForbiddenError("This profile is protected, only friends can view it");
             }
         }
-        const { page = 1, limit = 10 } = paginateDTO || {};
+        const { page = 1, limit = 10, search = "" } = paginateDTO || {};
         let skip = (page - 1) * limit;
         const posts = await this.postRepo
             .find({ userId: profileOwnerId })

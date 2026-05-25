@@ -48,7 +48,12 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const { posts, user } = await userService.getUserProfile(
       new Types.ObjectId(req.params.userId as string),
-      req.user ? req.user._id : null
+      req.user ? req.user._id : null,
+      {
+        limit: Number(req.query.limit),
+        page: Number(req.query.page),
+        search: req.query.search as string,
+      },
     );
 
     successResponse({

@@ -51,9 +51,11 @@ class UserService {
             profilePicture: 1,
             bio: 1,
             coverPhotos: 1,
+            profilePrivacy: 1,
         });
-        if (!user)
+        if (!user) {
             throw new exceptions_1.NotFoundError("User not found");
+        }
         if (viewerId) {
             const isBlocked = await this.blockRepo.findOne({
                 user: viewerId,
@@ -63,18 +65,12 @@ class UserService {
                 throw new exceptions_1.NotFoundError("User not found");
             }
         }
-        if (user.profilePrivacy === common_1.ProfilePrivacy.PROTECTED &&
-            !(viewerId && viewerId.equals(profileOwnerId))) {
+        const isOwner = viewerId && viewerId.equals(profileOwnerId);
+        if (user.profilePrivacy === common_1.ProfilePrivacy.PROTECTED && !isOwner) {
             const isFriend = await this.friendsRepo.findOne({
                 $or: [
-                    {
-                        user: viewerId,
-                        friend: profileOwnerId,
-                    },
-                    {
-                        user: profileOwnerId,
-                        friend: viewerId,
-                    },
+                    { user: viewerId, friend: profileOwnerId },
+                    { user: profileOwnerId, friend: viewerId },
                 ],
             });
             if (!isFriend) {
@@ -82,9 +78,10 @@ class UserService {
             }
         }
         const { page = 1, limit = 10, search = "" } = paginateDTO || {};
-        let skip = (page - 1) * limit;
+        const skip = (page - 1) * limit;
         const posts = await this.postRepo
             .find({ userId: profileOwnerId })
+            .populate("userId", "username profilePicture")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);

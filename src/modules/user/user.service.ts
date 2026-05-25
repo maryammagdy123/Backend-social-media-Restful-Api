@@ -89,43 +89,43 @@ export class UserService {
     viewerId: Types.ObjectId | null,
     paginateDTO: PaginateDTO,
   ) => {
+    // 1) get user 
     const user = await this.userRepo.findById(profileOwnerId, {
       username: 1,
       profilePicture: 1,
       bio: 1,
       coverPhotos: 1,
+      profilePrivacy: 1,
     });
 
-    if (!user) throw new NotFoundError("User not found");
-    //check if the user is blocked by the profile owner or not
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    // 2) check block
     if (viewerId) {
       const isBlocked = await this.blockRepo.findOne({
         user: viewerId,
         blockedBy: user._id,
       });
+
       if (isBlocked) {
         throw new NotFoundError("User not found");
       }
     }
 
-    //in case the user's profile is protected only shown to friends
-    if (
-      user.profilePrivacy === ProfilePrivacy.PROTECTED &&
-      !(viewerId && viewerId.equals(profileOwnerId))
-    ) {
-      //check if the user is a friend of the profile owner or not
+    // 3) privacy check
+    //profile is protected and the viewer is a friend
+    const isOwner = viewerId && viewerId.equals(profileOwnerId);
+
+    if (user.profilePrivacy === ProfilePrivacy.PROTECTED && !isOwner) {
       const isFriend = await this.friendsRepo.findOne({
         $or: [
-          {
-            user: viewerId,
-            friend: profileOwnerId,
-          },
-          {
-            user: profileOwnerId,
-            friend: viewerId,
-          },
+          { user: viewerId, friend: profileOwnerId },
+          { user: profileOwnerId, friend: viewerId },
         ],
       });
+
       if (!isFriend) {
         throw new ForbiddenError(
           "This profile is protected, only friends can view it",
@@ -133,14 +133,22 @@ export class UserService {
       }
     }
 
+    // 4) pagination defaults
     const { page = 1, limit = 10, search = "" } = paginateDTO || {};
-    let skip = (page - 1) * limit;
+    const skip = (page - 1) * limit;
+
+    // 5) posts query
     const posts = await this.postRepo
       .find({ userId: profileOwnerId })
+      .populate("userId", "username profilePicture")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
+
     return { user, posts };
+
+    // profile is public [private posts , public posts ] show public posts for all
+
   };
 
   public myProfile = async (me: Types.ObjectId): Promise<IProfileResponse> => {

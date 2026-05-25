@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userGQLSchema = void 0;
+const user_args_gql_1 = require("./user.args.gql");
 const user_resolver_1 = require("./user.resolver");
 const user_types_gql_1 = require("./user.types.gql");
 class UserGQLSchema {
@@ -14,6 +15,16 @@ class UserGQLSchema {
                 type: user_types_gql_1.ProfileResponseType,
                 description: "This query returns the profile of the currently authenticated user, including their basic information, posts, and friends. It requires authentication and will return an error if the user is not logged in.",
                 resolve: this.userResolver.getMyProfile,
+            },
+            getFriendProfile: {
+                type: user_types_gql_1.FriendProfileResponseType,
+                args: {
+                    input: {
+                        type: user_args_gql_1.FriendProfileArgsType,
+                    },
+                },
+                description: "Fetches a user profile including basic user information and paginated posts. Applies block and friendship checks for protected profiles.",
+                resolve: this.userResolver.getFriendProfile,
             },
         };
     }

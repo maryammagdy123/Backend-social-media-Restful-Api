@@ -1,5 +1,9 @@
+import { FriendProfileArgsType } from "./user.args.gql";
 import { userResolver, UserResolver } from "./user.resolver";
-import { ProfileResponseType } from "./user.types.gql";
+import {
+  FriendProfileResponseType,
+  ProfileResponseType,
+} from "./user.types.gql";
 class UserGQLSchema {
   constructor(private readonly userResolver: UserResolver) {}
 
@@ -10,6 +14,18 @@ class UserGQLSchema {
         description:
           "This query returns the profile of the currently authenticated user, including their basic information, posts, and friends. It requires authentication and will return an error if the user is not logged in.",
         resolve: this.userResolver.getMyProfile,
+      },
+
+      getFriendProfile: {
+        type: FriendProfileResponseType,
+        args: {
+          input: {
+            type: FriendProfileArgsType,
+          },
+        },
+        description:
+          "Fetches a user profile including basic user information and paginated posts. Applies block and friendship checks for protected profiles.",
+        resolve: this.userResolver.getFriendProfile,
       },
     };
   }

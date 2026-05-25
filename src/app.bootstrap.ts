@@ -11,7 +11,7 @@ import {
   requestRouter,
   schema,
 } from "./modules";
-import { globalErrorHandler } from "./middlewares";
+import { authenticateUser, globalErrorHandler } from "./middlewares";
 import { authenticateDB } from "./DB";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -19,7 +19,6 @@ import { userRouter } from "./modules/user";
 import { redisService } from "./common/providers/cache/redis/init";
 import { createHandler } from "graphql-http/lib/use/express";
 import { GraphQLObjectType, GraphQLSchema } from "graphql/type";
-
 
 const bootstrap = async () => {
   console.log("Bootstrapping the application...");
@@ -36,9 +35,10 @@ const bootstrap = async () => {
     }),
   );
 
-
-
-  app.all("/graphql", createHandler({ schema:schema ,context:(req)=>({req})}));
+  app.all(
+    "/graphql",
+    createHandler({ schema: schema, context: (req) => ({ req }) }),
+  );
   app.get("/", (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json("Hello, World!");
   });

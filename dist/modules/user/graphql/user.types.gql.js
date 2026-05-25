@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProfileResponseType = exports.UserProfileStatisticsTypeGQL = exports.UserTypeGQL = void 0;
+exports.FriendProfileResponseType = exports.FriendPostType = exports.FriendType = exports.ProfileResponseType = exports.UserProfileStatisticsTypeGQL = exports.UserTypeGQL = void 0;
 const graphql_1 = require("graphql");
 const post_1 = require("../../post");
 const user_enums_gql_types_1 = require("./user.enums.gql.types");
@@ -83,3 +83,34 @@ exports.ProfileResponseType = new graphql_1.GraphQLNonNull(new graphql_1.GraphQL
         },
     },
 }));
+exports.FriendType = new graphql_1.GraphQLObjectType({
+    name: "FriendProfileUser",
+    fields: {
+        _id: { type: graphql_1.GraphQLID },
+        username: { type: graphql_1.GraphQLString },
+        profilePrivacy: { type: graphql_1.GraphQLInt },
+    },
+});
+exports.FriendPostType = new graphql_1.GraphQLObjectType({
+    name: "FriendProfilePostUser",
+    fields: {
+        _id: { type: graphql_1.GraphQLID },
+        username: { type: graphql_1.GraphQLString },
+    },
+});
+exports.FriendProfileResponseType = new graphql_1.GraphQLObjectType({
+    name: "FriendProfileResponse",
+    fields: {
+        message: { type: graphql_1.GraphQLString },
+        status: { type: graphql_1.GraphQLInt },
+        data: {
+            type: new graphql_1.GraphQLObjectType({
+                name: "FriendProfileData",
+                fields: {
+                    user: { type: exports.FriendType },
+                    posts: { type: new graphql_1.GraphQLList(post_1.PostTypeGQL) },
+                },
+            }),
+        },
+    },
+});

@@ -88,7 +88,6 @@ export const UserProfileStatisticsTypeGQL = new GraphQLObjectType({
     friendsRequestsCount: { type: GraphQLInt },
     friendsCount: { type: GraphQLInt },
     likesCount: { type: GraphQLInt },
-  
   },
 });
 export const ProfileResponseType = new GraphQLNonNull(
@@ -117,3 +116,37 @@ export const ProfileResponseType = new GraphQLNonNull(
     },
   }),
 );
+
+export const FriendType = new GraphQLObjectType({
+  name: "FriendProfileUser",
+  fields: {
+    _id: { type: GraphQLID },
+    username: { type: GraphQLString },
+    profilePrivacy: { type: GraphQLInt },
+  },
+});
+export const FriendPostType = new GraphQLObjectType({
+  name: "FriendProfilePostUser",
+  fields: {
+    _id: { type: GraphQLID },
+    username: { type: GraphQLString },
+  },
+});
+
+export const FriendProfileResponseType = new GraphQLObjectType({
+  name: "FriendProfileResponse",
+  fields: {
+    message: { type: GraphQLString },
+    status: { type: GraphQLInt },
+
+    data: {
+      type: new GraphQLObjectType({
+        name: "FriendProfileData",
+        fields: {
+          user: { type: FriendType },
+          posts: { type: new GraphQLList(PostTypeGQL) },
+        },
+      }),
+    },
+  },
+});

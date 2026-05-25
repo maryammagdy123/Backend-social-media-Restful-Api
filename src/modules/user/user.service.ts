@@ -89,7 +89,7 @@ export class UserService {
     viewerId: Types.ObjectId | null,
     paginateDTO: PaginateDTO,
   ) => {
-    // 1) get user 
+    // 1) get user
     const user = await this.userRepo.findById(profileOwnerId, {
       username: 1,
       profilePicture: 1,
@@ -152,6 +152,7 @@ export class UserService {
   };
 
   public myProfile = async (me: Types.ObjectId): Promise<IProfileResponse> => {
+    // console.log("me",me)
     const [user, posts, friends, likes, requests, comments] = await Promise.all(
       [
         this.userRepo.findById(me),
@@ -166,6 +167,7 @@ export class UserService {
         this.commentRepo.find({ userId: me }).countDocuments(),
       ],
     );
+    // console.log(user)
     return {
       userProfile: user!,
       posts,

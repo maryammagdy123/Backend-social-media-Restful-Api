@@ -22,3 +22,4 @@ __exportStar(require("./comment.interface"), exports);
 __exportStar(require("./friend-request.interface"), exports);
 __exportStar(require("./user-friends.interface"), exports);
 __exportStar(require("./block.interface"), exports);
+__exportStar(require("../types/dto.common.type"), exports);

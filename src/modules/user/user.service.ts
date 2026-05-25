@@ -1,5 +1,6 @@
 import {
   IUser,
+  PaginateDTO,
   ProfilePrivacy,
   TokenService,
   UserDocument,
@@ -81,11 +82,12 @@ export class UserService {
   //this should return users data and published posts
   /**
    * userId is the profile owner
-   *
+   * viewerId is the person who is logged in
    */
   public getUserProfile = async (
     profileOwnerId: Types.ObjectId,
     viewerId: Types.ObjectId | null,
+    paginateDTO: PaginateDTO,
   ) => {
     const user = await this.userRepo.findById(profileOwnerId);
 
@@ -125,7 +127,14 @@ export class UserService {
         );
       }
     }
-    const posts = await this.postRepo.find({ userId: profileOwnerId });
+
+    const { page = 1, limit = 10 } = paginateDTO || {};
+    let skip = (page - 1) * limit;
+    const posts = await this.postRepo
+      .find({ userId: profileOwnerId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     return { user, posts };
   };
 

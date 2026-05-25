@@ -45,7 +45,7 @@ class UserService {
         await Promise.all(sessions.map((sessionId) => init_1.redisService.sRem(init_1.redisService.allSessionsSetKey(userId), sessionId)));
         return true;
     };
-    getUserProfile = async (profileOwnerId, viewerId) => {
+    getUserProfile = async (profileOwnerId, viewerId, paginateDTO) => {
         const user = await this.userRepo.findById(profileOwnerId);
         if (!user)
             throw new exceptions_1.NotFoundError("User not found");
@@ -76,7 +76,13 @@ class UserService {
                 throw new exceptions_1.ForbiddenError("This profile is protected, only friends can view it");
             }
         }
-        const posts = await this.postRepo.find({ userId: profileOwnerId });
+        const { page = 1, limit = 10 } = paginateDTO || {};
+        let skip = (page - 1) * limit;
+        const posts = await this.postRepo
+            .find({ userId: profileOwnerId })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
         return { user, posts };
     };
     myProfile = async (me) => {

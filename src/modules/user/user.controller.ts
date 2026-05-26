@@ -4,6 +4,7 @@ import { userService } from "./user.service";
 import { authenticateUser } from "../../middlewares";
 import { Types } from "mongoose";
 import { successResponse } from "../../common/response";
+import { feedService } from "../feed/feed.service";
 
 const router = Router();
 router.post(
@@ -60,6 +61,25 @@ router.get(
       res,
       message: "User profile retrieved successfully",
       data: { user, posts },
+    });
+  },
+);
+router.get(
+  "/feed",
+  authenticateUser("strict"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const feed = await feedService.getUserFeed(req.user, {
+      limit: Number(req.query.limit),
+      page: Number(req.query.page),
+    });
+    successResponse({
+      res,
+      message: "feed",
+      data: {
+        "posts-feed": feed.posts,
+        comments: feed.comments,
+        reactions: feed.reactions,
+      },
     });
   },
 );

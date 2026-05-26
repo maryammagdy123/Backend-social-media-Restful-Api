@@ -8,6 +8,7 @@ const user_service_1 = require("./user.service");
 const middlewares_1 = require("../../middlewares");
 const mongoose_1 = require("mongoose");
 const response_1 = require("../../common/response");
+const feed_service_1 = require("../feed/feed.service");
 const router = (0, express_1.default)();
 router.post("/logout", (0, middlewares_1.authenticateUser)("strict"), async (req, res, next) => {
     const refreshToken = req.cookies.refreshToken;
@@ -41,6 +42,21 @@ router.get("/profile/:userId", (0, middlewares_1.authenticateUser)("optional"), 
         res,
         message: "User profile retrieved successfully",
         data: { user, posts },
+    });
+});
+router.get("/feed", (0, middlewares_1.authenticateUser)("strict"), async (req, res, next) => {
+    const feed = await feed_service_1.feedService.getUserFeed(req.user, {
+        limit: Number(req.query.limit),
+        page: Number(req.query.page),
+    });
+    (0, response_1.successResponse)({
+        res,
+        message: "feed",
+        data: {
+            "posts-feed": feed.posts,
+            comments: feed.comments,
+            reactions: feed.reactions,
+        },
     });
 });
 exports.default = router;

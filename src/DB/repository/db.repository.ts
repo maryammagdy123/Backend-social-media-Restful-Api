@@ -51,8 +51,8 @@ export abstract class AbstractDBRepository<T> {
   public findByIdAndDelete(id: Types.ObjectId) {
     return this._model.findByIdAndDelete(id);
   }
-  public deleteOne( filter: QueryFilter<T>) {
-    return this._model.deleteOne(filter,);
+  public deleteOne(filter: QueryFilter<T>) {
+    return this._model.deleteOne(filter);
   }
 
   public updateOne(
@@ -61,5 +61,8 @@ export abstract class AbstractDBRepository<T> {
     options?: MongooseUpdateQueryOptions,
   ) {
     return this._model.updateOne(filter, update, options);
+  }
+  public aggregate(pipeline: any[]) {
+    return this._model.aggregate(pipeline);
   }
 }

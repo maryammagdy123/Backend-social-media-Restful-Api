@@ -32,5 +32,8 @@ class AbstractDBRepository {
     updateOne(filter, update, options) {
         return this._model.updateOne(filter, update, options);
     }
+    aggregate(pipeline) {
+        return this._model.aggregate(pipeline);
+    }
 }
 exports.AbstractDBRepository = AbstractDBRepository;

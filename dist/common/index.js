@@ -18,3 +18,4 @@ __exportStar(require("./enums"), exports);
 __exportStar(require("./interfaces"), exports);
 __exportStar(require("./types/user.types"), exports);
 __exportStar(require("./services"), exports);
+__exportStar(require("./realtime-gateway/realtime.gateway"), exports);

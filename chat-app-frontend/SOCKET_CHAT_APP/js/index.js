@@ -15,8 +15,8 @@ $("#login").click(() => {
   })
     .then(function (response) {
       const { message, data, success } = response.data;
-      if (success) {
-        localStorage.setItem("token", data.accessToken);
+      if (data.message === "Login successfully") {
+        localStorage.setItem("token", data.data.accessToken);
         window.location.href = "chat.html";
       } else {
         alert("In-valid email or password");

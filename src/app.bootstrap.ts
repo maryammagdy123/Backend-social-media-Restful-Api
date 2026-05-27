@@ -11,14 +11,15 @@ import {
   requestRouter,
   schema,
 } from "./modules";
-import { authenticateUser, globalErrorHandler } from "./middlewares";
+import { globalErrorHandler } from "./middlewares";
 import { authenticateDB } from "./DB";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { userRouter } from "./modules/user";
 import { redisService } from "./common/providers/cache/redis/init";
 import { createHandler } from "graphql-http/lib/use/express";
-import { GraphQLObjectType, GraphQLSchema } from "graphql/type";
+
+import { RealtimeGateway } from "./common";
 
 const bootstrap = async () => {
   console.log("Bootstrapping the application...");
@@ -30,7 +31,7 @@ const bootstrap = async () => {
   //cors
   app.use(
     cors({
-      origin: "http://localhost:5173",
+      origin: "*",
       credentials: true,
     }),
   );
@@ -52,8 +53,10 @@ const bootstrap = async () => {
     res.status(404).json("Not Found");
   });
   app.use(globalErrorHandler);
-  app.listen(3000, () => {
+  const httpServer = app.listen(3000, () => {
     console.log("Application is listening on port 3000");
   });
+  const realtimeGateway = new RealtimeGateway(httpServer);
+  const io = realtimeGateway.io;
 };
 export default bootstrap;

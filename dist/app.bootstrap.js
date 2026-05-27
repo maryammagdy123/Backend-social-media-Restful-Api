@@ -12,6 +12,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const user_1 = require("./modules/user");
 const init_1 = require("./common/providers/cache/redis/init");
 const express_2 = require("graphql-http/lib/use/express");
+const common_1 = require("./common");
 const bootstrap = async () => {
     console.log("Bootstrapping the application...");
     const app = (0, express_1.default)();
@@ -20,7 +21,7 @@ const bootstrap = async () => {
     app.use(express_1.default.json());
     app.use((0, cookie_parser_1.default)());
     app.use((0, cors_1.default)({
-        origin: "http://localhost:5173",
+        origin: "*",
         credentials: true,
     }));
     app.all("/graphql", (0, express_2.createHandler)({ schema: modules_1.schema, context: (req) => ({ req }) }));
@@ -37,8 +38,10 @@ const bootstrap = async () => {
         res.status(404).json("Not Found");
     });
     app.use(middlewares_1.globalErrorHandler);
-    app.listen(3000, () => {
+    const httpServer = app.listen(3000, () => {
         console.log("Application is listening on port 3000");
     });
+    const realtimeGateway = new common_1.RealtimeGateway(httpServer);
+    const io = realtimeGateway.io;
 };
 exports.default = bootstrap;

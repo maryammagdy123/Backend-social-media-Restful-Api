@@ -65,6 +65,22 @@ router.get(
   },
 );
 router.get(
+  "/me/profile",
+  authenticateUser("strict"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const data = await userService.myProfile(
+   req.user._id,
+    );
+  successResponse({
+      res,
+      message: "User profile retrieved successfully",
+      data,
+    });
+
+  },
+);
+
+router.get(
   "/feed",
   authenticateUser("strict"),
   async (req: Request, res: Response, next: NextFunction) => {

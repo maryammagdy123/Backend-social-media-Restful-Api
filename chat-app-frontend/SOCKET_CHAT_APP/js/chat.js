@@ -5,7 +5,7 @@ let meImage = "./avatar/Avatar-No-Background.png";
 let friendImage = "./avatar/Avatar-No-Background.png";
 
 const token = localStorage.getItem("token");
-const bearerToken = `Bearer ${token}`;
+const bearerToken = `${token}`;
 let globalProfile = {};
 const headers = {
   "Content-Type": "application/json; charset=UTF-8",
@@ -302,19 +302,20 @@ function displayGroupChat(groupId) {
 function getUserData() {
   axios({
     method: "get",
-    url: `${baseURL}/user`,
+    url: `${baseURL}/user/me/profile`,
     headers,
   })
     .then(function (response) {
-      const { user, groups, friends } = response.data?.data;
-      globalProfile = user;
+      console.log(response)
+      const { userProfile, groups, friends } = response.data?.data;
+      globalProfile = userProfile;
       let imagePath = avatar;
-      if (user.profilePicture) {
-        imagePath = `${baseURL}/uploads/${user.profilePicture}`;
+      if (userProfile.profilePicture) {
+        imagePath = `${baseURL}/uploads/${userProfile.profilePicture}`;
       }
       document.getElementById("profileImage").src = imagePath;
-      document.getElementById("userName").innerHTML = `${user.userName}`;
-      showUsersData(friends, user.userName);
+      document.getElementById("userName").innerHTML = `${userProfile.username}`;
+      showUsersData(friends, userProfile.username);
       showGroupList(groups);
     })
     .catch(function (error) {
@@ -322,24 +323,31 @@ function getUserData() {
     });
 }
 // Show friends list
-function showUsersData(friends = [], userName) {
+function showUsersData(friends = []) {
   let cartonna = ``;
+
   for (let i = 0; i < friends.length; i++) {
     let imagePath = avatar;
+
     if (friends[i].profilePicture) {
       imagePath = `${baseURL}/uploads/${friends[i].profilePicture}`;
     }
+
     cartonna += `
-        <div onclick="displayChatUser('${friends[i]._id}')" class="chatUser my-2">
-        <img class="chatImage" src="${imagePath}" alt="" srcset="">
-        <span class="ps-2">${friends[i].user.userName == userName ? friends[i].friend.userName : friends[i].user.userName}</span>
-        
-        <span id="${"c_" + friends[i]._id}" class="ps-2 closeSpan">
-           🟢
+      <div onclick="displayChatUser('${friends[i]._id}')" class="chatUser my-2">
+
+        <img class="chatImage" src="${imagePath}" alt="">
+
+        <span class="ps-2">
+          ${friends[i].username}
         </span>
-    </div>
-        
-        `;
+
+        <span id="c_${friends[i]._id}" class="ps-2 closeSpan">
+          🟢
+        </span>
+
+      </div>
+    `;
   }
 
   document.getElementById("chatUsers").innerHTML = cartonna;

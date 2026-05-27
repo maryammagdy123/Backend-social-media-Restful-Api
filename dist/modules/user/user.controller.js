@@ -44,6 +44,14 @@ router.get("/profile/:userId", (0, middlewares_1.authenticateUser)("optional"), 
         data: { user, posts },
     });
 });
+router.get("/me/profile", (0, middlewares_1.authenticateUser)("strict"), async (req, res, next) => {
+    const data = await user_service_1.userService.myProfile(req.user._id);
+    (0, response_1.successResponse)({
+        res,
+        message: "User profile retrieved successfully",
+        data,
+    });
+});
 router.get("/feed", (0, middlewares_1.authenticateUser)("strict"), async (req, res, next) => {
     const feed = await feed_service_1.feedService.getUserFeed(req.user, {
         limit: Number(req.query.limit),

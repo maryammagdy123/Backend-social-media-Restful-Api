@@ -57,6 +57,6 @@ const bootstrap = async () => {
     console.log("Application is listening on port 3000");
   });
   const realtimeGateway = new RealtimeGateway(httpServer);
-  const io = realtimeGateway.io;
+  realtimeGateway.establishConnection();
 };
 export default bootstrap;

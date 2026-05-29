@@ -148,11 +148,11 @@ export class UserService {
     return { user, posts };
 
     // profile is public [private posts , public posts ] show public posts for all
-
   };
 
   public myProfile = async (me: Types.ObjectId): Promise<IProfileResponse> => {
     // console.log("me",me)
+    //FIXME no need to get user from database again as its already comes from req , instead of passing logged in user id , pass the entire user
     const [user, posts, friends, likes, requests, comments] = await Promise.all(
       [
         this.userRepo.findById(me),
@@ -167,6 +167,8 @@ export class UserService {
         this.commentRepo.find({ userId: me }).countDocuments(),
       ],
     );
+
+    //todo get my groups
     // console.log(user)
     return {
       userProfile: user!,

@@ -5,3 +5,4 @@ export * from "./user-reaction/user-reaction.repository";
 export * from "./post/post.repository";
 export * from "./user-friend";
 export * from "./chat";
+export * from "./message";

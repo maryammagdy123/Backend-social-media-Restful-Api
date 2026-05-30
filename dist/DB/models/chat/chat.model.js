@@ -15,7 +15,7 @@ const ChatSchema = new mongoose_1.Schema({
         default: common_1.ChatEnum.private,
     },
     admin: {
-        type: mongoose_1.Schema.Types.ObjectId,
+        type: [mongoose_1.Schema.Types.ObjectId],
     },
     createdBy: {
         type: mongoose_1.Schema.Types.ObjectId,

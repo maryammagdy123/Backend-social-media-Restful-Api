@@ -14,7 +14,7 @@ const ChatSchema = new Schema<IChat>(
       default: ChatEnum.private,
     },
     admin: {
-      type: Schema.Types.ObjectId,
+      type: [Schema.Types.ObjectId],
     },
     createdBy: {
       type: Schema.Types.ObjectId,

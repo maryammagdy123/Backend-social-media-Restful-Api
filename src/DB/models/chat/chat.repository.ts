@@ -7,3 +7,4 @@ export class ChatRepository extends AbstractDBRepository<IChat> {
     super(ChatModel);
   }
 }
+export const chatRepo = new ChatRepository();

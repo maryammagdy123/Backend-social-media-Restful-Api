@@ -16,10 +16,17 @@ const ChatSchema = new mongoose_1.Schema({
     },
     admin: {
         type: [mongoose_1.Schema.Types.ObjectId],
+        ref: "User",
+        required: function () {
+            return this.type === common_1.ChatEnum.group;
+        },
     },
     createdBy: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "User",
+        required: function () {
+            return this.type === common_1.ChatEnum.group;
+        },
     },
     groupImage: String,
     groupName: String,

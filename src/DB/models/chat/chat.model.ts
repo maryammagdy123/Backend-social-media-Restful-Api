@@ -15,10 +15,17 @@ const ChatSchema = new Schema<IChat>(
     },
     admin: {
       type: [Schema.Types.ObjectId],
+      ref:"User",
+      required: function () {
+        return this.type === ChatEnum.group;
+      },
     },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: function () {
+        return this.type === ChatEnum.group;
+      },
     },
     groupImage: String,
     groupName: String,

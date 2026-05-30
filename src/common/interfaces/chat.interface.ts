@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import { ChatEnum } from "../enums";
-import { ILastMessage } from "./message.interface";
+import { IMessage } from "./message.interface";
+
 
 export interface IChat {
   participants: Types.ObjectId[];
@@ -10,5 +11,5 @@ export interface IChat {
   groupImage?: string;
   groupName?: string;
   groupId?: string;
-  lastMessage: ILastMessage;
+  lastMessage: IMessage;
 }

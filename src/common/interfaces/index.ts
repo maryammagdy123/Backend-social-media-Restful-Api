@@ -7,3 +7,5 @@ export * from "./friend-request.interface";
 export * from "./user-friends.interface";
 export * from "./block.interface";
 export * from "../types/dto.common.type";
+export * from "./chat.interface";
+export * from "./message.interface";

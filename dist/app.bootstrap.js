@@ -34,6 +34,7 @@ const bootstrap = async () => {
     app.use("/request", modules_1.requestRouter);
     app.use("/friend", modules_1.friendRouter);
     app.use("/comment", modules_1.commentRouter);
+    app.use("/chat", modules_1.chatRouter);
     app.get("/*dummy", (req, res, next) => {
         res.status(404).json("Not Found");
     });

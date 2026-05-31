@@ -5,6 +5,7 @@ import express, {
 } from "express";
 import {
   authRouter,
+  chatRouter,
   commentRouter,
   friendRouter,
   postRouter,
@@ -49,6 +50,7 @@ const bootstrap = async () => {
   app.use("/request", requestRouter);
   app.use("/friend", friendRouter);
   app.use("/comment", commentRouter);
+  app.use("/chat", chatRouter);
   app.get("/*dummy", (req: Request, res: Response, next: NextFunction) => {
     res.status(404).json("Not Found");
   });

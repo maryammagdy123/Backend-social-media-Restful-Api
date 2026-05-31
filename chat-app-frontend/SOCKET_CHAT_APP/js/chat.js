@@ -173,44 +173,46 @@ function showData(sendTo, chat) {
 }
 
 // // // // // // // // //get chat conversation between 2 users and pass it to ShowData fun
-function displayChatUser(userId) {
+function displayChatUser(friendId) {
   axios({
     method: "get",
-    url: `${baseURL}/chat/${userId}`,
+    url: `${baseURL}/chat/${friendId}`,
     headers,
   })
-    .then(function (response) {
-      const { chat, messages } = response.data?.data;
+.then(function (response) {
+  const { chat, messages } = response.data.data;
 
-      if (chat) {
-        if (
-          chat.participants[0]._id.toString() == globalProfile._id.toString()
-        ) {
-          meImage = chat.participants[0].profilePicture
-            ? `${baseURL}/uploads/${chat.participants[0].profilePicture}`
-            : avatar;
-          friendImage = chat.participants[1].profilePicture
-            ? `${baseURL}/uploads/${chat.participants[1].profilePicture}`
-            : avatar;
-        } else {
-          meImage = chat.participants[1].profilePicture
-            ? `${baseURL}/uploads/${chat.participants[1].profilePicture}`
-            : avatar;
-          friendImage = chat.participants[0].profilePicture
-            ? `${baseURL}/uploads/${chat.participants[0].profilePicture}`
-            : avatar;
-        }
-        chat.messages = messages;
-        showData(userId, chat);
-      } else {
-        showData(userId, 0);
-      }
-    })
+  const currentChat = chat[0];
+
+  console.log(currentChat);
+
+  const currentUser = currentChat.participants.find(
+    (user) =>
+      user._id.toString() === globalProfile._id.toString()
+  );
+
+  const friend = currentChat.participants.find(
+    (user) =>
+      user._id.toString() !== globalProfile._id.toString()
+  );
+
+  meImage = currentUser?.profilePicture
+    ? `${baseURL}/uploads/${currentUser.profilePicture}`
+    : avatar;
+
+  friendImage = friend?.profilePicture
+    ? `${baseURL}/uploads/${friend.profilePicture}`
+    : avatar;
+
+  currentChat.messages = messages;
+
+  showData(friendId, currentChat);
+})
     .catch(function (error) {
       console.log(error);
-      console.log({ status: error.status });
-      if (error.status) {
-        showData(userId, 0);
+
+      if (error.response?.status === 404) {
+        showData(friendId, 0);
       } else {
         alert("Ops something went wrong");
       }

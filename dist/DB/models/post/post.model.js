@@ -26,8 +26,8 @@ exports.schema = new mongoose_1.Schema({
     commentPrivacy: {
         type: String,
         enum: common_1.CommentPrivacy,
-        default: common_1.CommentPrivacy.PUBLIC
-    }
+        default: common_1.CommentPrivacy.PUBLIC,
+    },
 }, {
     timestamps: true,
 });

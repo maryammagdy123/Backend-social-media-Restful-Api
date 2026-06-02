@@ -12,11 +12,12 @@ import {
   blockRepo,
   BlockRepository,
 } from "../../DB/models/block/block.repository";
+import { MessageService, messageService } from "../message";
 
 export class ChatService {
   constructor(
     private readonly chatRepo: ChatRepository,
-    private readonly messageRepo: MessageRepository,
+    private readonly messageService: MessageService,
     private readonly friendRepo: UserFriendRepository,
     private readonly blockRepo: BlockRepository,
   ) {}
@@ -83,41 +84,17 @@ export class ChatService {
     if (!chat) {
       throw new NotFoundError("Chat not found");
     }
-    const messages = await this.getMessages(friendId, userId, chat._id);
+    const messages = await messageService.getMessages(chat._id);
 
     return {
       chat,
       messages,
     };
   };
-
-  private getMessages = async (
-    friendId: Types.ObjectId,
-    userId: Types.ObjectId,
-    chatId: Types.ObjectId,
-  ) => {
-    const messages = await this.messageRepo
-      .find({
-        $or: [
-          {
-            senderId: friendId,
-          },
-          {
-            senderId: userId,
-          },
-        ],
-        chatId,
-      })
-      .sort({ createdAt: -1 })
-      .limit(20);
-
-    return messages;
-  };
 }
-
 export const chatService = new ChatService(
   chatRepo,
-  messageRepo,
+  messageService,
   userFriendRepo,
   blockRepo,
 );

@@ -7,3 +7,4 @@ export class UserFriendRepository extends AbstractDBRepository<IUserFriends> {
     super(UserFriendModel);
   }
 }
+export const userFriendRepo = new UserFriendRepository();

@@ -7,3 +7,4 @@ export class BlockRepository extends AbstractDBRepository<IBlock> {
     super(BlockModel);
   }
 }
+export const blockRepo = new BlockRepository();

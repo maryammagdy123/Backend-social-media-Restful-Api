@@ -21,4 +21,5 @@ __exportStar(require("./post"), exports);
 __exportStar(require("./friend-request"), exports);
 __exportStar(require("./user-friends"), exports);
 __exportStar(require("./graphql"), exports);
+__exportStar(require("./message"), exports);
 __exportStar(require("./chat"), exports);

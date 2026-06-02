@@ -5,11 +5,12 @@ import express, {
 } from "express";
 import {
   authRouter,
-  chatRouter,
+  messageRouter,
   commentRouter,
   friendRouter,
   postRouter,
   requestRouter,
+  chatRouter,
   schema,
 } from "./modules";
 import { globalErrorHandler } from "./middlewares";
@@ -21,6 +22,7 @@ import { redisService } from "./common/providers/cache/redis/init";
 import { createHandler } from "graphql-http/lib/use/express";
 
 import { RealtimeGateway } from "./common";
+
 
 const bootstrap = async () => {
   console.log("Bootstrapping the application...");
@@ -51,6 +53,7 @@ const bootstrap = async () => {
   app.use("/friend", friendRouter);
   app.use("/comment", commentRouter);
   app.use("/chat", chatRouter);
+  app.use("/message", messageRouter);
   app.get("/*dummy", (req: Request, res: Response, next: NextFunction) => {
     res.status(404).json("Not Found");
   });

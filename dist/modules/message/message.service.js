@@ -13,6 +13,7 @@ class MessageService {
     getMessages = async (chat) => {
         const messages = await this.messageRepo
             .find({ chat: chat })
+            .populate("senderId", "username profilePicture")
             .sort({ createdAt: -1 })
             .limit(20);
         if (!messages) {
@@ -21,7 +22,7 @@ class MessageService {
         return messages;
     };
     sendMessage = async (chatId, senderId, content) => {
-        const chat = await this.chatRepo.findById(chatId);
+        const chat = await this.chatRepo.findOne({ _id: chatId });
         if (!chat) {
             throw new exceptions_1.NotFoundError("Chat not found");
         }

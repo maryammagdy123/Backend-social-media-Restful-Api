@@ -5,11 +5,7 @@ import {
   messageRepo,
   MessageRepository,
 } from "../../DB";
-import {
-  BadRequestError,
-  ForbiddenError,
-  NotFoundError,
-} from "../../common/exceptions";
+import { ForbiddenError, NotFoundError } from "../../common/exceptions";
 
 export class MessageService {
   constructor(
@@ -20,6 +16,7 @@ export class MessageService {
   public getMessages = async (chat: Types.ObjectId) => {
     const messages = await this.messageRepo
       .find({ chat: chat })
+      .populate("senderId", "username profilePicture")
       .sort({ createdAt: -1 })
       .limit(20);
 
@@ -36,7 +33,7 @@ export class MessageService {
   ) => {
     //check if sender is part of the chat
     //TODO:enctrypt the message content before saving it to the database using a symmetric encryption algorithm and decrypt it when retrieving the messages
-    const chat = await this.chatRepo.findById(chatId);
+    const chat = await this.chatRepo.findOne({ _id: chatId });
     if (!chat) {
       throw new NotFoundError("Chat not found");
     }
